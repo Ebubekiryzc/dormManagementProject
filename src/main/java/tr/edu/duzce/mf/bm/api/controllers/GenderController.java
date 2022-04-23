@@ -1,5 +1,7 @@
 package tr.edu.duzce.mf.bm.api.controllers;
 
+import jakarta.annotation.security.DenyAll;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import tr.edu.duzce.mf.bm.business.abstracts.GenderService;
@@ -11,7 +13,13 @@ import tr.edu.duzce.mf.bm.entities.concretes.Gender;
 
 import java.util.List;
 
+
+//@QueryParam(parametre adı) --> QueryString yakalama.
+//@MatrixParam(parametre adı) --> ; ile ayrılmış url'deki işaretleri alma
+
+//TODO: Bir tane boş controller açıp orada /{placeholder} diye bir olmayan url'leri yakalayan controller açabiliriz.
 @Path("/genders")
+
 public class GenderController {
     private GenderService genderService;
 
@@ -28,7 +36,7 @@ public class GenderController {
     @GET
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public DataResult<Gender> getById(@PathParam("id") int id) {
+    public DataResult<Gender> getById(@PathParam("id") Integer id) {
         return this.genderService.getById(id);
     }
 

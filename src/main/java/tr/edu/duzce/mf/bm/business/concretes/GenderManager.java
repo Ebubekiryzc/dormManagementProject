@@ -1,7 +1,5 @@
 package tr.edu.duzce.mf.bm.business.concretes;
 
-import jakarta.inject.Scope;
-import jakarta.inject.Singleton;
 import tr.edu.duzce.mf.bm.business.abstracts.GenderService;
 import tr.edu.duzce.mf.bm.core.dataAccess.constants.Messages;
 import tr.edu.duzce.mf.bm.core.utilities.business.BusinessRules;
@@ -13,7 +11,7 @@ import java.util.List;
 
 public class GenderManager implements GenderService {
 
-    GenderDao genderDao;
+    private GenderDao genderDao;
 
     public GenderManager(GenderDao genderDao) {
         this.genderDao = genderDao;
@@ -55,7 +53,7 @@ public class GenderManager implements GenderService {
         return new ErrorResult(Messages.OperationFailed);
     }
 
-    public DataResult<Gender> isNull(Gender gender) {
+    private DataResult<Gender> isNull(Gender gender) {
         if (gender == null) {
             return new ErrorDataResult<>(Messages.OperationFailed);
         }

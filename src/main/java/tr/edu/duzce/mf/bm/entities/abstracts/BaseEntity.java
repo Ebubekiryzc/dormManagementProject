@@ -6,6 +6,7 @@ import java.lang.reflect.Field;
 
 public abstract class BaseEntity {
 
+    // TODO: PK olmadığını kontrol et.
     protected String getNonePrimaryKeyFieldsToString() {
         String fieldsStr = "";
 
@@ -23,6 +24,7 @@ public abstract class BaseEntity {
 
                 if (field.getType().getSimpleName().equals("String")) {
                     value = String.format("\'%s\'", value);
+                    // name='Kadın' - name=Kadın
                 }
 
                 fieldsStr = fieldsStr.concat(

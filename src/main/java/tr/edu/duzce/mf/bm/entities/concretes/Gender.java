@@ -1,6 +1,5 @@
 package tr.edu.duzce.mf.bm.entities.concretes;
 
-import jakarta.json.bind.annotation.JsonbVisibility;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
