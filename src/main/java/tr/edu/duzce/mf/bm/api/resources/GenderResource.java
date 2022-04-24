@@ -1,7 +1,9 @@
-package tr.edu.duzce.mf.bm.api.controllers;
+package tr.edu.duzce.mf.bm.api.resources;
 
-import jakarta.annotation.security.DenyAll;
+import jakarta.annotation.Resource;
+import jakarta.annotation.security.PermitAll;
 import jakarta.annotation.security.RolesAllowed;
+import jakarta.inject.Singleton;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import tr.edu.duzce.mf.bm.business.abstracts.GenderService;
@@ -18,16 +20,18 @@ import java.util.List;
 //@MatrixParam(parametre adı) --> ; ile ayrılmış url'deki işaretleri alma
 
 //TODO: Bir tane boş controller açıp orada /{placeholder} diye bir olmayan url'leri yakalayan controller açabiliriz.
-@Path("/genders")
-
-public class GenderController {
+@Path(value = "/genders")
+@Singleton
+@Resource
+public class GenderResource {
     private GenderService genderService;
 
-    public GenderController() {
+    public GenderResource() {
         genderService = new GenderManager(new JDBCGenderDao());
     }
 
     @GET
+    @PermitAll
     @Produces(MediaType.APPLICATION_JSON)
     public DataResult<List<Gender>> getAll() {
         return this.genderService.getAll();
@@ -35,24 +39,29 @@ public class GenderController {
 
     @GET
     @Path("/{id}")
+    @PermitAll
     @Produces(MediaType.APPLICATION_JSON)
     public DataResult<Gender> getById(@PathParam("id") Integer id) {
         return this.genderService.getById(id);
     }
 
+    // TODO: id ile ilgili değişiklikler yapılacak.
     @POST
+    @RolesAllowed({"admin"})
     @Consumes(MediaType.APPLICATION_JSON)
     public Result add(Gender gender) {
         return this.genderService.add(gender);
     }
 
     @PUT
+    @RolesAllowed({"admin"})
     @Consumes(MediaType.APPLICATION_JSON)
     public Result update(Gender gender) {
         return this.genderService.update(gender);
     }
 
     @DELETE
+    @RolesAllowed({"admin"})
     @Consumes(MediaType.APPLICATION_JSON)
     public Result delete(Gender gender) {
         return this.genderService.delete(gender);

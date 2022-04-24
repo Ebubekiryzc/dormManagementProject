@@ -20,4 +20,25 @@ public class Queries {
     public static String delete(String tableName, String id) {
         return String.format("Delete from %s where id=%s", tableName, id);
     }
+
+    public static String getByUsername(String tableName, String username) {
+        return String.format("Select * from %s where username='%s'", tableName, username);
+    }
+
+    public static String getUserClaims(String userClaimTable, String claimTable, String claimTableIdColumn, String userClaimTableOperationClaimIdColumn, String userClaimTableUserIdColumn, String id) {
+        System.out.println(String.format("Select claim_table.id, claim_table.name from %s as claim_table inner join %s as user_claim_table on claim_table.%s=user_claim_table.%s where user_claim_table.%s=%s",
+                claimTable,
+                userClaimTable,
+                claimTableIdColumn,
+                userClaimTableOperationClaimIdColumn,
+                userClaimTableUserIdColumn,
+                id));
+        return String.format("Select claim_table.id, claim_table.name from %s as claim_table inner join %s as user_claim_table on claim_table.%s=user_claim_table.%s where user_claim_table.%s=%s",
+                claimTable,
+                userClaimTable,
+                claimTableIdColumn,
+                userClaimTableOperationClaimIdColumn,
+                userClaimTableUserIdColumn,
+                id);
+    }
 }

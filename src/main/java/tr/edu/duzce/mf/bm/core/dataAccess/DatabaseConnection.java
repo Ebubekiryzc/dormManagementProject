@@ -12,13 +12,17 @@ public class DatabaseConnection {
     @Getter
     private static Connection connection;
     private String url = "jdbc:oracle:thin:@localhost:1521:xe";
+    private String url2 = "jdbc:postgresql://localhost/denemeler?user=postgres&password=12345";
     private String username = "admin";
     private String password = "admin";
 
-    public DatabaseConnection() throws SQLException {
+    private DatabaseConnection() throws SQLException {
         try {
-            Class.forName("oracle.jdbc.driver.OracleDriver");
-            this.connection = DriverManager.getConnection(url, this.username, this.password);
+            //Class.forName("oracle.jdbc.driver.OracleDriver");
+            //this.connection = DriverManager.getConnection(url, this.username, this.password);
+            Class.forName("org.postgresql.Driver");
+            this.connection = DriverManager.getConnection(url2);
+
             System.out.println(Messages.ConnectionComplete);
         } catch (ClassNotFoundException ex) {
             System.out.println(String.format("%s : %s", Messages.OperationFailed, ex.getMessage()));

@@ -1,4 +1,4 @@
-package tr.edu.duzce.mf.bm.entities.abstracts;
+package tr.edu.duzce.mf.bm.core.entities.abstracts;
 
 import tr.edu.duzce.mf.bm.core.utilities.annotations.TableColumn;
 

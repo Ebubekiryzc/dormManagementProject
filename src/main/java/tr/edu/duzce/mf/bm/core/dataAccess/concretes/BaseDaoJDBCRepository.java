@@ -45,7 +45,7 @@ public abstract class BaseDaoJDBCRepository<TEntity> implements BaseDao<TEntity>
                 entityList.add(entity);
             }
         } catch (SQLException | InvocationTargetException | InstantiationException | IllegalAccessException | NoSuchMethodException exception) {
-            System.err.println(exception.getMessage());
+            System.err.println(exception.getMessage()+" 45");
         }
         return entityList;
 
@@ -62,7 +62,7 @@ public abstract class BaseDaoJDBCRepository<TEntity> implements BaseDao<TEntity>
                 return entity;
             }
         } catch (SQLException | InvocationTargetException | InstantiationException | IllegalAccessException | NoSuchMethodException exception) {
-            System.err.println(exception.getMessage());
+            System.err.println(exception.getMessage()+ "65");
         }
         return null;
     }
@@ -77,7 +77,7 @@ public abstract class BaseDaoJDBCRepository<TEntity> implements BaseDao<TEntity>
 
             statement.executeQuery(Queries.add(tableName, String.format("%s,%s", getFieldStringValue(idField, tEntity), getNonPKFieldValues(tEntity))));
         } catch (SQLException | NoSuchElementException | IllegalAccessException exception) {
-            System.err.println(exception.getMessage());
+            System.err.println(exception.getMessage() + "80");
             return false;
         }
         return true;
@@ -96,7 +96,7 @@ public abstract class BaseDaoJDBCRepository<TEntity> implements BaseDao<TEntity>
                 throw new NotExistInDatabase();
             }
         } catch (SQLException | NoSuchElementException | IllegalAccessException | NotExistInDatabase exception) {
-            System.err.println(exception.getMessage());
+            System.err.println(exception.getMessage() + "99");
             return false;
         }
         return true;
@@ -115,13 +115,13 @@ public abstract class BaseDaoJDBCRepository<TEntity> implements BaseDao<TEntity>
                 throw new NotExistInDatabase();
             }
         } catch (SQLException | NoSuchElementException | IllegalAccessException | NotExistInDatabase exception) {
-            System.err.println(exception.getMessage());
+            System.err.println(exception.getMessage() + "118");
             return false;
         }
         return true;
     }
 
-    private void loadResultSetIntoObject(ResultSet resultSet, TEntity entity) throws SQLException, IllegalAccessException {
+    protected void loadResultSetIntoObject(ResultSet resultSet, TEntity entity) throws SQLException, IllegalAccessException {
         for (Field field : entityClass.getDeclaredFields()) {
             field.setAccessible(true);
 
@@ -180,7 +180,7 @@ public abstract class BaseDaoJDBCRepository<TEntity> implements BaseDao<TEntity>
                 fields = fields.concat(String.format("%s,", value));
             }
         } catch (IllegalAccessException exception) {
-            System.err.println(exception.getMessage());
+            System.err.println(exception.getMessage() + "183");
         }
         fields = fields.substring(0, fields.length() - 1);
         return fields;
