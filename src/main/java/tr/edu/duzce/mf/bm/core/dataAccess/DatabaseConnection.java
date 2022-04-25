@@ -25,7 +25,7 @@ public class DatabaseConnection {
 
             System.out.println(Messages.ConnectionComplete);
         } catch (ClassNotFoundException ex) {
-            System.out.println(String.format("%s : %s", Messages.OperationFailed, ex.getMessage()));
+            System.err.println(String.format("%s : %s", Messages.OperationFailed, ex.getMessage()));
         }
     }
 

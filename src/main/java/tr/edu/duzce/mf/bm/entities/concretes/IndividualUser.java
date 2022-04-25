@@ -14,7 +14,6 @@ import tr.edu.duzce.mf.bm.core.utilities.annotations.TableName;
 @AllArgsConstructor
 @TableName(value = "individual_users")
 public class IndividualUser extends BaseEntity {
-    @Id
     @TableColumn(name="user_id")
     private Long userId;
     @TableColumn(name = "gender_id")
@@ -23,7 +22,7 @@ public class IndividualUser extends BaseEntity {
     @TableColumn(name = "first_name")
     private String firstName;
     @TableColumn(name = "last_name")
-    private String lastLame;
+    private String lastName;
     @TableColumn(name = "day_off_limit")
     private Integer dayOffLimit;
 

@@ -23,6 +23,7 @@ public class JDBCOperationClaimDao extends BaseDaoJDBCRepository<OperationClaim>
         super(OperationClaim.class);
     }
 
+    @Override
     public List<OperationClaim> getClaims(User user){
         List<OperationClaim> operationClaims = new ArrayList<>();
         try {
@@ -55,5 +56,25 @@ public class JDBCOperationClaimDao extends BaseDaoJDBCRepository<OperationClaim>
             System.err.println(exception.getMessage() + "49");
         }
         return operationClaims;
+    }
+
+    @Override
+    public OperationClaim getClaimByName(String name) {
+        try{
+            Statement statement = super.getDatabaseConnection().getConnection().createStatement();
+            String operationClaimTable = OperationClaim.class.getAnnotation(TableName.class).value();
+            Field nameField = OperationClaim.class.getDeclaredField("name");
+            String nameFieldColumnName = nameField.getAnnotation(TableColumn.class).name();
+
+            ResultSet resultSet = statement.executeQuery(Queries.getClaimByName(operationClaimTable, nameFieldColumnName, name));
+            while(resultSet.next()){
+                OperationClaim operationClaim = new OperationClaim();
+                loadResultSetIntoObject(resultSet, operationClaim);
+                return operationClaim;
+            }
+        }catch (SQLException | NoSuchFieldException | IllegalAccessException exception) {
+            System.err.println(exception.getMessage() + "66");
+        }
+        return null;
     }
 }

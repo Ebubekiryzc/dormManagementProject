@@ -47,21 +47,21 @@ public class GenderResource {
 
     // TODO: id ile ilgili değişiklikler yapılacak.
     @POST
-    @RolesAllowed({"admin"})
+    @PermitAll
     @Consumes(MediaType.APPLICATION_JSON)
     public Result add(Gender gender) {
         return this.genderService.add(gender);
     }
 
     @PUT
-    @RolesAllowed({"admin"})
+    @PermitAll
     @Consumes(MediaType.APPLICATION_JSON)
     public Result update(Gender gender) {
         return this.genderService.update(gender);
     }
 
     @DELETE
-    @RolesAllowed({"admin"})
+    @PermitAll
     @Consumes(MediaType.APPLICATION_JSON)
     public Result delete(Gender gender) {
         return this.genderService.delete(gender);

@@ -16,9 +16,8 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @TableName(value = "staffs")
 public class Staff extends BaseEntity {
-    @Id
     @TableColumn(name = "individual_user_id")
-    private BigDecimal individualUserId;
+    private Long individualUserId;
     @TableColumn(name = "date_of_start")
     private LocalDate dateOfStart;
     @TableColumn(name = "salary")

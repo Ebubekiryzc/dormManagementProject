@@ -16,7 +16,6 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @TableName(value = "students")
 public class Student extends BaseEntity {
-    @Id
     @TableColumn(name = "individual_user_id")
     private Long individualUserId;
     @TableColumn(name = "department_id")

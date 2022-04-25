@@ -3,6 +3,7 @@ package tr.edu.duzce.mf.bm.business.concretes;
 import jakarta.inject.Scope;
 import jakarta.inject.Singleton;
 import tr.edu.duzce.mf.bm.business.abstracts.IndividualUserService;
+import tr.edu.duzce.mf.bm.business.abstracts.UserService;
 import tr.edu.duzce.mf.bm.core.dataAccess.constants.Messages;
 import tr.edu.duzce.mf.bm.core.utilities.business.BusinessRules;
 import tr.edu.duzce.mf.bm.core.utilities.results.*;

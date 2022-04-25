@@ -16,8 +16,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public abstract class BaseDaoJDBCRepository<TEntity> implements BaseDao<TEntity> {
@@ -45,7 +47,7 @@ public abstract class BaseDaoJDBCRepository<TEntity> implements BaseDao<TEntity>
                 entityList.add(entity);
             }
         } catch (SQLException | InvocationTargetException | InstantiationException | IllegalAccessException | NoSuchMethodException exception) {
-            System.err.println(exception.getMessage()+" 45");
+            System.err.println(exception.getMessage()+"/45 BaseDaoJDBCRepository");
         }
         return entityList;
 
@@ -62,7 +64,7 @@ public abstract class BaseDaoJDBCRepository<TEntity> implements BaseDao<TEntity>
                 return entity;
             }
         } catch (SQLException | InvocationTargetException | InstantiationException | IllegalAccessException | NoSuchMethodException exception) {
-            System.err.println(exception.getMessage()+ "65");
+            System.err.println(exception.getMessage()+ "/65 BaseDaoJDBCRepository");
         }
         return null;
     }
@@ -71,13 +73,12 @@ public abstract class BaseDaoJDBCRepository<TEntity> implements BaseDao<TEntity>
     public boolean add(TEntity tEntity) {
         try {
             Statement statement = getDatabaseConnection().getConnection().createStatement();
-            Field idField = getIdField(tEntity);
-
             String tableName = entityClass.getAnnotation(TableName.class).value();
 
-            statement.executeQuery(Queries.add(tableName, String.format("%s,%s", getFieldStringValue(idField, tEntity), getNonPKFieldValues(tEntity))));
-        } catch (SQLException | NoSuchElementException | IllegalAccessException exception) {
-            System.err.println(exception.getMessage() + "80");
+            //TODO: Oracle için executeQuery olabilir.
+            statement.executeUpdate(Queries.add(tableName, getNonPKFieldNames(tEntity), getNonPKFieldValues(tEntity)));
+        } catch (Exception exception) {
+            System.err.println(exception.getMessage() + "/80 BaseDaoJDBCRepository");
             return false;
         }
         return true;
@@ -96,7 +97,7 @@ public abstract class BaseDaoJDBCRepository<TEntity> implements BaseDao<TEntity>
                 throw new NotExistInDatabase();
             }
         } catch (SQLException | NoSuchElementException | IllegalAccessException | NotExistInDatabase exception) {
-            System.err.println(exception.getMessage() + "99");
+            System.err.println(exception.getMessage() + "/99 BaseDaoJDBCRepository");
             return false;
         }
         return true;
@@ -115,7 +116,7 @@ public abstract class BaseDaoJDBCRepository<TEntity> implements BaseDao<TEntity>
                 throw new NotExistInDatabase();
             }
         } catch (SQLException | NoSuchElementException | IllegalAccessException | NotExistInDatabase exception) {
-            System.err.println(exception.getMessage() + "118");
+            System.err.println(exception.getMessage() + "/118 BaseDaoJDBCRepository");
             return false;
         }
         return true;
@@ -137,6 +138,15 @@ public abstract class BaseDaoJDBCRepository<TEntity> implements BaseDao<TEntity>
                 Class<?> boxed = boxPrimitiveClass(type);
                 value = boxed.cast(value);
             }
+            if(value.getClass().getName().equals("org.postgresql.jdbc.PgArray")){
+                String[] byteValues = value.toString().replace("{","").replace("}","").split(",");
+                byte[] bytes = new byte[byteValues.length];
+                for(int i = 0; i<bytes.length; i++){
+                    bytes[i] = (byte) Integer.parseInt(byteValues[i],2);
+                }
+                value = bytes;
+            }
+            System.out.println(value.getClass());
 
             field.set(entity, value);
         }
@@ -169,6 +179,25 @@ public abstract class BaseDaoJDBCRepository<TEntity> implements BaseDao<TEntity>
         }
     }
 
+    private String getNonPKFieldNames(TEntity entity) {
+        String fields = "";
+        try {
+            for (var field : entity.getClass().getDeclaredFields()) {
+                if (field.getAnnotation(Id.class) != null) continue;
+
+                String fieldName = field.getName();
+                if(field.getAnnotation(TableColumn.class).name() != null){
+                    fieldName = field.getAnnotation(TableColumn.class).name();
+                }
+                fields = fields.concat(String.format("%s,", fieldName));
+            }
+        } catch (Exception exception) {
+            System.err.println(exception.getMessage() + "/183 BaseDaoJDBCRepository");
+        }
+        fields = fields.substring(0, fields.length() - 1);
+        return fields;
+    }
+
     private String getNonPKFieldValues(TEntity entity) {
         String fields = "";
         try {
@@ -180,7 +209,7 @@ public abstract class BaseDaoJDBCRepository<TEntity> implements BaseDao<TEntity>
                 fields = fields.concat(String.format("%s,", value));
             }
         } catch (IllegalAccessException exception) {
-            System.err.println(exception.getMessage() + "183");
+            System.err.println(exception.getMessage() + "/201 BaseDaoJDBCRepository");
         }
         fields = fields.substring(0, fields.length() - 1);
         return fields;
@@ -196,6 +225,8 @@ public abstract class BaseDaoJDBCRepository<TEntity> implements BaseDao<TEntity>
 
     private String getFieldStringValue(Field field, TEntity entity) throws IllegalAccessException {
         Object value = field.get(entity);
+        if(value==null) return null;
+
         Class<?> type = field.getType();
 
         if (isPrimitive(type)) {
@@ -205,7 +236,15 @@ public abstract class BaseDaoJDBCRepository<TEntity> implements BaseDao<TEntity>
 
         if (type.getSimpleName().equals("String")) {
             value = String.format("\'%s\'", value.toString());
+        }else if(type.getSimpleName().equals("byte[]")){
+            byte[] bytes = (byte[]) field.get(entity);
+            List<String> byteValue = new ArrayList<>();
+            for (byte b : bytes) {
+                byteValue.add(Integer.toBinaryString(b & 255 | 256).substring(1));
+            }
+            value = String.format("'{%s}'",byteValue.stream().collect(Collectors.joining(",")));
         }
+
 
         return value.toString();
     }

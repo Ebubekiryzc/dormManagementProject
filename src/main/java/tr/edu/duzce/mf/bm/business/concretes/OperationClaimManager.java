@@ -40,6 +40,16 @@ public class OperationClaimManager implements OperationClaimService {
     }
 
     @Override
+    public DataResult<OperationClaim> getByName(String name) {
+        OperationClaim operationClaim = operationClaimDao.getClaimByName(name);
+        var result = BusinessRules.check(isNull(operationClaim));
+        if(!result.isSuccess()){
+            return (ErrorDataResult<OperationClaim>) result;
+        }
+        return new SuccessDataResult<>(operationClaim, Messages.OperationSuccessful);
+    }
+
+    @Override
     public Result add(OperationClaim operationClaim) {
         boolean isAdded = operationClaimDao.add(operationClaim);
         if (isAdded) return new SuccessResult(Messages.OperationSuccessful);

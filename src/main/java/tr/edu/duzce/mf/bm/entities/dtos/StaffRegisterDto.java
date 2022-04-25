@@ -7,13 +7,11 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Data
-public class StudentRegisterDto {
+public class StaffRegisterDto {
     private IndividualUserRegisterDto individualUserRegisterDto;
 
-    private Long departmentId;
     private List<OperationClaim> roles;
 
-    private LocalDate dateOfEntry;
-    private String blockCode;
-    private Integer roomNumber;
+    private LocalDate dateOfStart;
+    private Integer salary;
 }

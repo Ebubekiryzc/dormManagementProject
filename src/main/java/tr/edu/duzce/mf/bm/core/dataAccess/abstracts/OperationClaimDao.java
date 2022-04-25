@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface OperationClaimDao extends BaseDao<OperationClaim>{
     public List<OperationClaim> getClaims(User user);
+    public OperationClaim getClaimByName(String name);
 }

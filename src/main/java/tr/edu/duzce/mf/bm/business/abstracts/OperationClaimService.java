@@ -12,6 +12,7 @@ public interface OperationClaimService {
     public DataResult<List<OperationClaim>> getAll();
     public DataResult<List<OperationClaim>> getUserClaims(User user);
     public DataResult<OperationClaim> getById(int id);
+    public DataResult<OperationClaim> getByName(String name);
     public Result add(OperationClaim operationClaim);
     public Result update(OperationClaim operationClaim);
     public Result delete(OperationClaim operationClaim);

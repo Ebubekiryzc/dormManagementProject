@@ -9,8 +9,8 @@ public class Queries {
         return String.format("Select * from %s where id=%d", tableName, id);
     }
 
-    public static String add(String tableName, String entity) {
-        return String.format("Insert Into %s values(%s)", tableName, entity);
+    public static String add(String tableName, String columnNames,String entity) {
+        return String.format("Insert Into %s(%s) values(%s)", tableName, columnNames, entity);
     }
 
     public static String update(String tableName, String entity, String id) {
@@ -26,13 +26,6 @@ public class Queries {
     }
 
     public static String getUserClaims(String userClaimTable, String claimTable, String claimTableIdColumn, String userClaimTableOperationClaimIdColumn, String userClaimTableUserIdColumn, String id) {
-        System.out.println(String.format("Select claim_table.id, claim_table.name from %s as claim_table inner join %s as user_claim_table on claim_table.%s=user_claim_table.%s where user_claim_table.%s=%s",
-                claimTable,
-                userClaimTable,
-                claimTableIdColumn,
-                userClaimTableOperationClaimIdColumn,
-                userClaimTableUserIdColumn,
-                id));
         return String.format("Select claim_table.id, claim_table.name from %s as claim_table inner join %s as user_claim_table on claim_table.%s=user_claim_table.%s where user_claim_table.%s=%s",
                 claimTable,
                 userClaimTable,
@@ -40,5 +33,9 @@ public class Queries {
                 userClaimTableOperationClaimIdColumn,
                 userClaimTableUserIdColumn,
                 id);
+    }
+
+    public static String getClaimByName(String claimTable, String nameColumn, String nameValue) {
+        return String.format("Select * from %s where %s='%s'",claimTable, nameColumn, nameValue);
     }
 }

@@ -33,7 +33,7 @@ public class JDBCUserDao extends BaseDaoJDBCRepository<User> implements UserDao 
                 return user;
             }
         } catch (SQLException | IllegalAccessException exception) {
-            System.err.println(exception.getMessage() + "36");
+            System.err.println(exception.getMessage() + "/36 JDBCUserDao");
         }
         return null;
     }

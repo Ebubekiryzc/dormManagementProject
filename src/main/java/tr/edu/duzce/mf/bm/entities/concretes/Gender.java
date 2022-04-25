@@ -17,7 +17,7 @@ import java.math.BigDecimal;
 public class Gender extends BaseEntity {
     @Id
     @TableColumn(name = "id")
-    private BigDecimal id;
+    private Long id;
     @TableColumn(name = "name")
     private String name;
 

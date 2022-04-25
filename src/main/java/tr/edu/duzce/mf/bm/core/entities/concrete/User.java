@@ -22,10 +22,10 @@ public class User extends BaseEntity {
     private String username;
 
     @TableColumn(name="password_hash")
-    private String passwordHash;
+    private byte[] passwordHash;
 
     @TableColumn(name="password_salt")
-    private String passwordSalt;
+    private byte[] passwordSalt;
 
     @TableColumn(name="status")
     private boolean status;
