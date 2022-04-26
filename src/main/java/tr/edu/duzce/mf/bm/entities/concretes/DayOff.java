@@ -8,7 +8,6 @@ import tr.edu.duzce.mf.bm.core.utilities.annotations.Id;
 import tr.edu.duzce.mf.bm.core.utilities.annotations.TableColumn;
 import tr.edu.duzce.mf.bm.core.utilities.annotations.TableName;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Data
@@ -19,8 +18,8 @@ public class DayOff extends BaseEntity {
     @Id
     @TableColumn(name = "id")
     private Long id;
-    @TableColumn(name = "individual_user_id")
-    private Long individualUserId;
+    @TableColumn(name = "user_id")
+    private Long userId;
     @TableColumn(name = "date_of_start")
     private LocalDate dateOfStart;
     @TableColumn(name = "date_of_end")

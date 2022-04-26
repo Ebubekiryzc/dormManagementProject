@@ -12,5 +12,4 @@ public class JDBCIndividualUserDao extends BaseDaoJDBCRepository<IndividualUser>
     public JDBCIndividualUserDao() {
         super(IndividualUser.class);
     }
-
 }

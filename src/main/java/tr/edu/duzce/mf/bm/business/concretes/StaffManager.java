@@ -24,6 +24,27 @@ public class StaffManager implements StaffService {
     }
 
     @Override
+    public DataResult<List<Staff>> getByFullName(String firstName, String lastName) {
+        List<Staff> staffList = staffDao.getByFullName(firstName, lastName);
+        if (staffList == null) return new ErrorDataResult<>(null, Messages.OperationFailed);
+        return new SuccessDataResult<>(staffList, Messages.OperationSuccessful);
+    }
+
+    @Override
+    public DataResult<List<Staff>> getByFirstName(String firstName) {
+        List<Staff> staffList = staffDao.getByFirstName(firstName);
+        if (staffList == null) return new ErrorDataResult<>(null, Messages.OperationFailed);
+        return new SuccessDataResult<>(staffList, Messages.OperationSuccessful);
+    }
+
+    @Override
+    public DataResult<List<Staff>> getByLastName(String lastName) {
+        List<Staff> staffList = staffDao.getByLastName(lastName);
+        if (staffList == null) return new ErrorDataResult<>(null, Messages.OperationFailed);
+        return new SuccessDataResult<>(staffList, Messages.OperationSuccessful);
+    }
+
+    @Override
     public DataResult<Staff> getById(int id) {
         Staff staff = staffDao.getById(id);
         var result = BusinessRules.check(isNull(staff));

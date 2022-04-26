@@ -10,6 +10,12 @@ import java.util.List;
 public interface StaffService {
     public DataResult<List<Staff>> getAll();
 
+    public DataResult<List<Staff>> getByFullName(String firstName, String lastName);
+
+    public DataResult<List<Staff>> getByFirstName(String firstName);
+
+    DataResult<List<Staff>> getByLastName(String lastName);
+
     public DataResult<Staff> getById(int id);
 
     public Result add(Staff staff);
@@ -17,4 +23,5 @@ public interface StaffService {
     public Result update(Staff staff);
 
     public Result delete(Staff staff);
+
 }

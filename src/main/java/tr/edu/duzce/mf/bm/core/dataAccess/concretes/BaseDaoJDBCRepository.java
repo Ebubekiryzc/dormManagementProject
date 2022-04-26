@@ -146,7 +146,7 @@ public abstract class BaseDaoJDBCRepository<TEntity> implements BaseDao<TEntity>
                 }
                 value = bytes;
             }
-            System.out.println(value.getClass());
+            //System.out.println(value.getClass());
 
             field.set(entity, value);
         }
