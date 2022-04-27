@@ -8,6 +8,8 @@ import tr.edu.duzce.mf.bm.core.utilities.annotations.Id;
 import tr.edu.duzce.mf.bm.core.utilities.annotations.TableColumn;
 import tr.edu.duzce.mf.bm.core.utilities.annotations.TableName;
 
+import java.math.BigDecimal;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -15,9 +17,9 @@ import tr.edu.duzce.mf.bm.core.utilities.annotations.TableName;
 public class Department extends BaseEntity {
     @Id
     @TableColumn(name = "id")
-    private Long id;
+    private BigDecimal id;
     @TableColumn(name = "faculty_id")
-    private Long facultyId;
+    private BigDecimal facultyId;
     @TableColumn(name = "name")
     private String name;
 

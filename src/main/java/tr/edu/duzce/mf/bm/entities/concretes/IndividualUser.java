@@ -8,6 +8,8 @@ import tr.edu.duzce.mf.bm.core.utilities.annotations.Id;
 import tr.edu.duzce.mf.bm.core.utilities.annotations.TableColumn;
 import tr.edu.duzce.mf.bm.core.utilities.annotations.TableName;
 
+import java.math.BigDecimal;
+
 
 @Data
 @NoArgsConstructor
@@ -15,16 +17,16 @@ import tr.edu.duzce.mf.bm.core.utilities.annotations.TableName;
 @TableName(value = "individual_users")
 public class IndividualUser extends BaseEntity {
     @TableColumn(name="user_id")
-    private Long userId;
+    private BigDecimal userId;
     @TableColumn(name = "gender_id")
-    private Long genderId;
+    private BigDecimal genderId;
 
     @TableColumn(name = "first_name")
     private String firstName;
     @TableColumn(name = "last_name")
     private String lastName;
     @TableColumn(name = "day_off_limit")
-    private Integer dayOffLimit;
+    private BigDecimal dayOffLimit;
 
     @Override
     public String toString() {

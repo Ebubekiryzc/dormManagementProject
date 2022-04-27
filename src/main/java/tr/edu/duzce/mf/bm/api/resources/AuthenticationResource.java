@@ -27,7 +27,8 @@ import tr.edu.duzce.mf.bm.entities.dtos.StaffRegisterDto;
 import tr.edu.duzce.mf.bm.entities.dtos.StudentRegisterDto;
 
 
-//TODO: login'de şifre kontrolü de yap, hashing işlemlerini burada kullanabilirsin.
+//TODO: Kayıt işlemlerindeki yetkiler tekrardan tanımlanmalı --> PRODUCTION
+//TODO: Öğrenci ve görevlileri getirirken bir DTO yazıp bütün ilgili entity bilgileri getirilebilir.
 
 @Path("/authenticate")
 @Singleton
@@ -60,11 +61,10 @@ public class AuthenticationResource {
         return authService.login(userCredentials);
     }
 
-    // TODO: Buradan devam edilecek. Yapman gereken şey operationclaim için isme göre getirme yazmak. Böylece bu isimdeki yetkinin id değerini getirip atayabileceksin.
 
     @POST
     @Path("/register_student")
-    @RolesAllowed({"admin","staff"})
+    @PermitAll
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Result registerStudent(StudentRegisterDto studentRegisterDto){
@@ -73,7 +73,7 @@ public class AuthenticationResource {
 
     @POST
     @Path("/register_staff")
-    @RolesAllowed({"admin"})
+    @PermitAll
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Result registerStaff(StaffRegisterDto staffRegisterDto){

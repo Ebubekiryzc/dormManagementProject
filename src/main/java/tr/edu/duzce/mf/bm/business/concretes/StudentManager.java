@@ -7,6 +7,7 @@ import tr.edu.duzce.mf.bm.core.utilities.business.BusinessRules;
 import tr.edu.duzce.mf.bm.core.utilities.results.*;
 import tr.edu.duzce.mf.bm.dataAccess.abstracts.StudentDao;
 import tr.edu.duzce.mf.bm.entities.concretes.Gender;
+import tr.edu.duzce.mf.bm.entities.concretes.Staff;
 import tr.edu.duzce.mf.bm.entities.concretes.Student;
 
 import java.util.List;
@@ -21,12 +22,12 @@ public class StudentManager implements StudentService {
 
     @Override
     public DataResult<List<Student>> getAll() {
-        return new SuccessDataResult<>(studentDao.getAll(),Messages.OperationSuccessful);
+        return new SuccessDataResult<>(studentDao.getAll(), Messages.OperationSuccessful);
     }
 
     @Override
     public DataResult<Student> getById(int id) {
-        Student student = studentDao.getById(id);
+        Student student = studentDao.getById(String.valueOf(id));
         var result = BusinessRules.check(isNull(student));
         if (!result.isSuccess()) {
             return (ErrorDataResult<Student>) result;
@@ -53,6 +54,27 @@ public class StudentManager implements StudentService {
         boolean isDeleted = studentDao.delete(student);
         if (isDeleted) return new SuccessResult(Messages.OperationSuccessful);
         return new ErrorResult(Messages.OperationFailed);
+    }
+
+    @Override
+    public DataResult<List<Student>> getByFullName(String firstName, String lastName) {
+        List<Student> studentList = studentDao.getByFullName(firstName, lastName);
+        if (studentList == null) return new ErrorDataResult<>(null, Messages.OperationFailed);
+        return new SuccessDataResult<>(studentList, Messages.OperationSuccessful);
+    }
+
+    @Override
+    public DataResult<List<Student>> getByFirstName(String firstName) {
+        List<Student> studentList = studentDao.getByFirstName(firstName);
+        if (studentList == null) return new ErrorDataResult<>(null, Messages.OperationFailed);
+        return new SuccessDataResult<>(studentList, Messages.OperationSuccessful);
+    }
+
+    @Override
+    public DataResult<List<Student>> getByLastName(String lastName) {
+        List<Student> studentList = studentDao.getByLastName(lastName);
+        if (studentList == null) return new ErrorDataResult<>(null, Messages.OperationFailed);
+        return new SuccessDataResult<>(studentList, Messages.OperationSuccessful);
     }
 
     private DataResult<Student> isNull(Student student) {

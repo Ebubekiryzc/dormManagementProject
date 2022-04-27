@@ -24,7 +24,7 @@ public class StaffTaskManager implements StaffTaskService {
 
     @Override
     public DataResult<StaffTask> getById(int id) {
-        StaffTask staffTask = staffTaskDao.getById(id);
+        StaffTask staffTask = staffTaskDao.getById(String.valueOf(id));
         var result = BusinessRules.check(isNull(staffTask));
         if (!result.isSuccess()) {
             return (ErrorDataResult<StaffTask>) result;

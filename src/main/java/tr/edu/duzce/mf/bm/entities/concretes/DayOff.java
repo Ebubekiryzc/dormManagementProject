@@ -1,5 +1,6 @@
 package tr.edu.duzce.mf.bm.entities.concretes;
 
+import jakarta.json.bind.annotation.JsonbDateFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -8,7 +9,7 @@ import tr.edu.duzce.mf.bm.core.utilities.annotations.Id;
 import tr.edu.duzce.mf.bm.core.utilities.annotations.TableColumn;
 import tr.edu.duzce.mf.bm.core.utilities.annotations.TableName;
 
-import java.time.LocalDate;
+import java.math.BigDecimal;
 
 @Data
 @NoArgsConstructor
@@ -17,13 +18,13 @@ import java.time.LocalDate;
 public class DayOff extends BaseEntity {
     @Id
     @TableColumn(name = "id")
-    private Long id;
+    private BigDecimal id;
     @TableColumn(name = "user_id")
-    private Long userId;
+    private BigDecimal userId;
     @TableColumn(name = "date_of_start")
-    private LocalDate dateOfStart;
+    private String dateOfStart;
     @TableColumn(name = "date_of_end")
-    private LocalDate dateOfEnd;
+    private String dateOfEnd;
 
     @Override
     public String toString() {

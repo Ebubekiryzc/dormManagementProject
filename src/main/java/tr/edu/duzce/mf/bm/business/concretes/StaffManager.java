@@ -46,7 +46,7 @@ public class StaffManager implements StaffService {
 
     @Override
     public DataResult<Staff> getById(int id) {
-        Staff staff = staffDao.getById(id);
+        Staff staff = staffDao.getById(String.valueOf(id));
         var result = BusinessRules.check(isNull(staff));
         if (!result.isSuccess()) {
             return (ErrorDataResult<Staff>) result;

@@ -24,7 +24,7 @@ public class DepartmentManager implements DepartmentService {
 
     @Override
     public DataResult<Department> getById(int id) {
-        Department department = departmentDao.getById(id);
+        Department department = departmentDao.getById(String.valueOf(id));
         var result = BusinessRules.check(isNull(department));
         if (!result.isSuccess()) {
             return (ErrorDataResult<Department>) result;

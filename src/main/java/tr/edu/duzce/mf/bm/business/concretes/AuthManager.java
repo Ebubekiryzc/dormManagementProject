@@ -17,6 +17,7 @@ import tr.edu.duzce.mf.bm.entities.dtos.IndividualUserRegisterDto;
 import tr.edu.duzce.mf.bm.entities.dtos.StaffRegisterDto;
 import tr.edu.duzce.mf.bm.entities.dtos.StudentRegisterDto;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 //TODO: Burada user varsa ekleme gibi kontroller henüz yok!
@@ -111,7 +112,7 @@ public class AuthManager implements AuthService {
         return new SuccessDataResult<>(user, Messages.OperationSuccessful);
     }
 
-    private void addUserOperationClaims(Long userId, List<OperationClaim> roleSet) {
+    private void addUserOperationClaims(BigDecimal userId, List<OperationClaim> roleSet) {
         for (OperationClaim role: roleSet){
             OperationClaim operationClaim = operationClaimService.getByName(role.getName()).getEntity();
             UserOperationClaim userOperationClaim = new UserOperationClaim();
@@ -130,7 +131,6 @@ public class AuthManager implements AuthService {
         user.setUsername(authenticateUserDTO.getUsername());
         user.setPasswordSalt(saltAndPepperModel.getSalt());
         user.setPasswordHash(saltAndPepperModel.getHash());
-        user.setStatus(true);
 
         Result result = userService.add(user);
         return user;

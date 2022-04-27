@@ -8,6 +8,8 @@ import tr.edu.duzce.mf.bm.core.utilities.annotations.Id;
 import tr.edu.duzce.mf.bm.core.utilities.annotations.TableColumn;
 import tr.edu.duzce.mf.bm.core.utilities.annotations.TableName;
 
+import java.math.BigDecimal;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -15,11 +17,11 @@ import tr.edu.duzce.mf.bm.core.utilities.annotations.TableName;
 public class StaffTask extends BaseEntity {
     @Id
     @TableColumn(name="id")
-    private Long id;
+    private BigDecimal id;
     @TableColumn(name = "staff_id")
-    private Long staffId;
+    private BigDecimal staffId;
     @TableColumn(name = "task_id")
-    private Long taskId;
+    private BigDecimal taskId;
 
     @Override
     public String toString() {

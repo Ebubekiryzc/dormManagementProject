@@ -24,7 +24,7 @@ public class UserOperationClaimManager implements UserOperationClaimService {
 
     @Override
     public DataResult<UserOperationClaim> getById(int id) {
-        UserOperationClaim userOperationClaim = userOperationClaimDao.getById(id);
+        UserOperationClaim userOperationClaim = userOperationClaimDao.getById(String.valueOf(id));
         var result = BusinessRules.check(isNull(userOperationClaim));
         if (!result.isSuccess()) {
             return (ErrorDataResult<UserOperationClaim>) result;

@@ -4,11 +4,10 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import tr.edu.duzce.mf.bm.core.entities.abstracts.BaseEntity;
-import tr.edu.duzce.mf.bm.core.utilities.annotations.Id;
 import tr.edu.duzce.mf.bm.core.utilities.annotations.TableColumn;
 import tr.edu.duzce.mf.bm.core.utilities.annotations.TableName;
 
-import java.time.LocalDate;
+import java.math.BigDecimal;
 
 
 @Data
@@ -17,16 +16,16 @@ import java.time.LocalDate;
 @TableName(value = "students")
 public class Student extends BaseEntity {
     @TableColumn(name = "individual_user_id")
-    private Long individualUserId;
+    private BigDecimal individualUserId;
     @TableColumn(name = "department_id")
-    private Long departmentId;
+    private BigDecimal departmentId;
 
     @TableColumn(name = "date_of_entry")
-    private LocalDate dateOfEntry;
+    private String dateOfEntry;
     @TableColumn(name = "block_code")
     private String blockCode;
     @TableColumn(name = "room_number")
-    private Integer roomNumber;
+    private BigDecimal roomNumber;
 
 
     @Override

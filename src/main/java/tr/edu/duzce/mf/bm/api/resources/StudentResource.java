@@ -7,6 +7,7 @@ import tr.edu.duzce.mf.bm.business.concretes.StudentManager;
 import tr.edu.duzce.mf.bm.core.utilities.results.DataResult;
 import tr.edu.duzce.mf.bm.core.utilities.results.Result;
 import tr.edu.duzce.mf.bm.dataAccess.concretes.JDBCDao.JDBCStudentDao;
+import tr.edu.duzce.mf.bm.entities.concretes.Staff;
 import tr.edu.duzce.mf.bm.entities.concretes.Student;
 
 import java.util.List;
@@ -23,6 +24,19 @@ public class StudentResource {
     @Produces(MediaType.APPLICATION_JSON)
     public DataResult<List<Student>> getAll() {
         return this.studentService.getAll();
+    }
+
+    @GET
+    @Path("/filter")
+    @Produces(MediaType.APPLICATION_JSON)
+    public DataResult<List<Student>> getByFirstName(@QueryParam("first_name") String firstName, @QueryParam("last_name") String lastName) {
+        if (firstName != null && lastName != null) {
+            return this.studentService.getByFullName(firstName, lastName);
+        } else if (firstName != null) {
+            return this.studentService.getByFirstName(firstName);
+        } else if (lastName != null) {
+            return this.studentService.getByLastName(lastName);
+        } else return null;
     }
 
     @GET

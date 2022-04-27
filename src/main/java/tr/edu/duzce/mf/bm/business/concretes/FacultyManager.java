@@ -26,7 +26,7 @@ public class FacultyManager implements FacultyService {
 
     @Override
     public DataResult<Faculty> getById(int id) {
-        Faculty faculty = facultyDao.getById(id);
+        Faculty faculty = facultyDao.getById(String.valueOf(id));
         var result = BusinessRules.check(isNull(faculty));
         if (!result.isSuccess()) {
             return (ErrorDataResult<Faculty>) result;

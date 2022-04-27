@@ -13,11 +13,11 @@ import java.math.BigDecimal;
 public class UserOperationClaim extends BaseEntity {
     @Id
     @TableColumn(name = "id")
-    private Long id;
+    private BigDecimal id;
     @TableColumn(name="user_id")
-    private Long userId;
+    private BigDecimal userId;
     @TableColumn(name="operation_claim_id")
-    private Long operationClaimId;
+    private BigDecimal operationClaimId;
 
 
     @Override

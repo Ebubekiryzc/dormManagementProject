@@ -5,7 +5,7 @@ import java.util.List;
 public interface BaseDao<TEntity> {
     public List<TEntity> getAll();
 
-    public TEntity getById(int id);
+    public TEntity getById(String id);
 
     public boolean add(TEntity entity);
 

@@ -18,10 +18,10 @@ public class DatabaseConnection {
 
     private DatabaseConnection() throws SQLException {
         try {
-            //Class.forName("oracle.jdbc.driver.OracleDriver");
-            //this.connection = DriverManager.getConnection(url, this.username, this.password);
-            Class.forName("org.postgresql.Driver");
-            this.connection = DriverManager.getConnection(url2);
+            Class.forName("oracle.jdbc.driver.OracleDriver");
+            this.connection = DriverManager.getConnection(url, this.username, this.password);
+            //Class.forName("org.postgresql.Driver");
+            //this.connection = DriverManager.getConnection(url2);
 
             System.out.println(Messages.ConnectionComplete);
         } catch (ClassNotFoundException ex) {

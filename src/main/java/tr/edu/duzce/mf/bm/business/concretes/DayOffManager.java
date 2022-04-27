@@ -24,7 +24,7 @@ public class DayOffManager implements DayOffService {
 
     @Override
     public DataResult<DayOff> getById(int id) {
-        DayOff dayOff = dayOffDao.getById(id);
+        DayOff dayOff = dayOffDao.getById(String.valueOf(id));
         var result = BusinessRules.check(isNull(dayOff));
         if (!result.isSuccess()) {
             return (ErrorDataResult<DayOff>) result;

@@ -17,7 +17,7 @@ import java.math.BigDecimal;
 public class Faculty extends BaseEntity {
     @Id
     @TableColumn(name = "id")
-    private Long id;
+    private BigDecimal id;
     @TableColumn(name = "name")
     private String name;
 

@@ -16,7 +16,7 @@ import java.math.BigDecimal;
 public class User extends BaseEntity {
     @Id
     @TableColumn(name = "id")
-    private Long id;
+    private BigDecimal id;
 
     @TableColumn(name="username")
     private String username;
@@ -26,9 +26,6 @@ public class User extends BaseEntity {
 
     @TableColumn(name="password_salt")
     private byte[] passwordSalt;
-
-    @TableColumn(name="status")
-    private boolean status;
 
     @Override
     public String toString() {

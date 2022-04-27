@@ -47,13 +47,14 @@ public class JDBCOperationClaimDao extends BaseDaoJDBCRepository<OperationClaim>
             String userOperationClaimTableUserIdColumn = userOperationClaimTableUserIdField.getAnnotation(TableColumn.class).name();
 
             ResultSet resultSet = statement.executeQuery(Queries.getUserClaims(userOperationClaimTable,operationClaimTable,operationClaimTableIdColumn,userOperationClaimTableOperationIdColumn,userOperationClaimTableUserIdColumn,user.getId().toString()));
+
             while(resultSet.next()){
                 OperationClaim operationClaim = new OperationClaim();
                 loadResultSetIntoObject(resultSet, operationClaim);
                 operationClaims.add(operationClaim);
             }
         } catch (SQLException | NoSuchFieldException | IllegalAccessException exception) {
-            System.err.println(exception.getMessage() + "49");
+            System.err.println(exception.getMessage() + "/57 JDBCOperationClaimDao");
         }
         return operationClaims;
     }

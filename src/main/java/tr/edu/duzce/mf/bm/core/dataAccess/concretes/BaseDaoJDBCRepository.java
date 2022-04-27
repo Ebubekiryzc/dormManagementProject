@@ -12,11 +12,11 @@ import tr.edu.duzce.mf.bm.core.utilities.exceptions.NotExistInDatabase;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.sql.Blob;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
@@ -47,14 +47,14 @@ public abstract class BaseDaoJDBCRepository<TEntity> implements BaseDao<TEntity>
                 entityList.add(entity);
             }
         } catch (SQLException | InvocationTargetException | InstantiationException | IllegalAccessException | NoSuchMethodException exception) {
-            System.err.println(exception.getMessage()+"/45 BaseDaoJDBCRepository");
+            System.err.println(exception.getMessage() + "/45 BaseDaoJDBCRepository");
         }
         return entityList;
 
     }
 
     @Override
-    public TEntity getById(int id) {
+    public TEntity getById(String id) {
         try {
             Statement statement = getDatabaseConnection().getConnection().createStatement();
             ResultSet resultSet = statement.executeQuery(Queries.get(entityClass.getAnnotation(TableName.class).value(), id));
@@ -64,7 +64,7 @@ public abstract class BaseDaoJDBCRepository<TEntity> implements BaseDao<TEntity>
                 return entity;
             }
         } catch (SQLException | InvocationTargetException | InstantiationException | IllegalAccessException | NoSuchMethodException exception) {
-            System.err.println(exception.getMessage()+ "/65 BaseDaoJDBCRepository");
+            System.err.println(exception.getMessage() + "/65 BaseDaoJDBCRepository");
         }
         return null;
     }
@@ -75,7 +75,6 @@ public abstract class BaseDaoJDBCRepository<TEntity> implements BaseDao<TEntity>
             Statement statement = getDatabaseConnection().getConnection().createStatement();
             String tableName = entityClass.getAnnotation(TableName.class).value();
 
-            //TODO: Oracle için executeQuery olabilir.
             statement.executeUpdate(Queries.add(tableName, getNonPKFieldNames(tEntity), getNonPKFieldValues(tEntity)));
         } catch (Exception exception) {
             System.err.println(exception.getMessage() + "/80 BaseDaoJDBCRepository");
@@ -138,18 +137,37 @@ public abstract class BaseDaoJDBCRepository<TEntity> implements BaseDao<TEntity>
                 Class<?> boxed = boxPrimitiveClass(type);
                 value = boxed.cast(value);
             }
-            if(value.getClass().getName().equals("org.postgresql.jdbc.PgArray")){
-                String[] byteValues = value.toString().replace("{","").replace("}","").split(",");
+
+            if (value.getClass().getName().equals("org.postgresql.jdbc.PgArray")) {
+                String[] byteValues = value.toString().replace("{", "").replace("}", "").split(",");
                 byte[] bytes = new byte[byteValues.length];
-                for(int i = 0; i<bytes.length; i++){
-                    bytes[i] = (byte) Integer.parseInt(byteValues[i],2);
+                for (int i = 0; i < bytes.length; i++) {
+                    bytes[i] = (byte) Integer.parseInt(byteValues[i], 2);
+                }
+                value = bytes;
+            }else if (field.getType().getSimpleName().equals("byte[]")){
+                String[] text = divideTextForEachNChar(value.toString(),8);
+                byte[] bytes = new byte[text.length];
+                for (int i = 0; i < bytes.length; i++) {
+                    bytes[i] = (byte) Integer.parseInt(text[i], 2);
                 }
                 value = bytes;
             }
-            //System.out.println(value.getClass());
+
+            if(value.getClass().getSimpleName().equals("Timestamp")){
+                value = value.toString();
+            }
 
             field.set(entity, value);
         }
+    }
+
+    private String[] divideTextForEachNChar(String text, int n) {
+        String[] returningText = new String[text.length() / n];
+        for (int i = 0; i < text.length() / n; i++) {
+            returningText[i] = text.substring(i * n, (i + 1) * n);
+        }
+        return returningText;
     }
 
     private boolean isPrimitive(Class<?> type) {
@@ -186,7 +204,7 @@ public abstract class BaseDaoJDBCRepository<TEntity> implements BaseDao<TEntity>
                 if (field.getAnnotation(Id.class) != null) continue;
 
                 String fieldName = field.getName();
-                if(field.getAnnotation(TableColumn.class).name() != null){
+                if (field.getAnnotation(TableColumn.class).name() != null) {
                     fieldName = field.getAnnotation(TableColumn.class).name();
                 }
                 fields = fields.concat(String.format("%s,", fieldName));
@@ -225,7 +243,7 @@ public abstract class BaseDaoJDBCRepository<TEntity> implements BaseDao<TEntity>
 
     private String getFieldStringValue(Field field, TEntity entity) throws IllegalAccessException {
         Object value = field.get(entity);
-        if(value==null) return null;
+        if (value == null) return null;
 
         Class<?> type = field.getType();
 
@@ -236,15 +254,14 @@ public abstract class BaseDaoJDBCRepository<TEntity> implements BaseDao<TEntity>
 
         if (type.getSimpleName().equals("String")) {
             value = String.format("\'%s\'", value.toString());
-        }else if(type.getSimpleName().equals("byte[]")){
-            byte[] bytes = (byte[]) field.get(entity);
+        } else if (type.getSimpleName().equals("byte[]")) {
             List<String> byteValue = new ArrayList<>();
+            byte[] bytes = (byte[]) field.get(entity);
             for (byte b : bytes) {
                 byteValue.add(Integer.toBinaryString(b & 255 | 256).substring(1));
             }
-            value = String.format("'{%s}'",byteValue.stream().collect(Collectors.joining(",")));
+            value = String.format("'%s'", byteValue.stream().collect(Collectors.joining("")));
         }
-
 
         return value.toString();
     }

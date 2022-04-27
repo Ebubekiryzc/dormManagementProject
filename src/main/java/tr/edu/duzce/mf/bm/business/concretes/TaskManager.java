@@ -25,7 +25,7 @@ public class TaskManager implements TaskService {
 
     @Override
     public DataResult<Task> getById(int id) {
-        Task task = taskDao.getById(id);
+        Task task = taskDao.getById(String.valueOf(id));
         var result = BusinessRules.check(isNull(task));
         if (!result.isSuccess()) {
             return (ErrorDataResult<Task>) result;

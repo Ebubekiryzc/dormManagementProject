@@ -16,4 +16,10 @@ public interface StudentService {
     public Result update(Student student);
 
     public Result delete(Student student);
+
+    public DataResult<List<Student>> getByFullName(String firstName, String lastName);
+
+    public DataResult<List<Student>> getByFirstName(String firstName);
+
+    public DataResult<List<Student>> getByLastName(String lastName);
 }

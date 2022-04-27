@@ -24,7 +24,7 @@ public class GenderManager implements GenderService {
 
     @Override
     public DataResult<Gender> getById(int id) {
-        Gender gender = genderDao.getById(id);
+        Gender gender = genderDao.getById(String.valueOf(id));
         var result = BusinessRules.check(isNull(gender));
         if (!result.isSuccess()) {
             return (ErrorDataResult<Gender>) result;

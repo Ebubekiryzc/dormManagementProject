@@ -5,11 +5,12 @@ public class Queries {
         return String.format("Select * from %s order by id", tableName);
     }
 
-    public static String get(String tableName, int id) {
-        return String.format("Select * from %s where id=%d", tableName, id);
+    public static String get(String tableName, String id) {
+        return String.format("Select * from %s where id=%s", tableName, id);
     }
 
     public static String add(String tableName, String columnNames,String entity) {
+        System.out.println(String.format("Insert Into %s(%s) values(%s)", tableName, columnNames, entity));
         return String.format("Insert Into %s(%s) values(%s)", tableName, columnNames, entity);
     }
 
@@ -26,7 +27,7 @@ public class Queries {
     }
 
     public static String getUserClaims(String userClaimTable, String claimTable, String claimTableIdColumn, String userClaimTableOperationClaimIdColumn, String userClaimTableUserIdColumn, String id) {
-        return String.format("Select claim_table.id, claim_table.name from %s as claim_table inner join %s as user_claim_table on claim_table.%s=user_claim_table.%s where user_claim_table.%s=%s",
+        return String.format("Select claim_table.* from %s claim_table inner join %s user_claim_table on claim_table.%s=user_claim_table.%s where user_claim_table.%s=%s",
                 claimTable,
                 userClaimTable,
                 claimTableIdColumn,

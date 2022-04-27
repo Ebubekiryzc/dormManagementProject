@@ -26,7 +26,7 @@ public class UserManager implements UserService {
 
     @Override
     public DataResult<User> getById(int id) {
-        User user = userDao.getById(id);
+        User user = userDao.getById(String.valueOf(id));
         var result = BusinessRules.check(isNull(user));
         if (!result.isSuccess()) {
             return (ErrorDataResult<User>) result;

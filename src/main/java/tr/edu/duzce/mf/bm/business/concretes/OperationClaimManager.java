@@ -31,7 +31,7 @@ public class OperationClaimManager implements OperationClaimService {
 
     @Override
     public DataResult<OperationClaim> getById(int id) {
-        OperationClaim operationClaim = operationClaimDao.getById(id);
+        OperationClaim operationClaim = operationClaimDao.getById(String.valueOf(id));
         var result = BusinessRules.check(isNull(operationClaim));
         if (!result.isSuccess()) {
             return (ErrorDataResult<OperationClaim>) result;

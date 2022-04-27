@@ -27,7 +27,7 @@ public class IndividualUserManager implements IndividualUserService {
 
     @Override
     public DataResult<IndividualUser> getById(int id) {
-        IndividualUser individualUser = individualUserDao.getById(id);
+        IndividualUser individualUser = individualUserDao.getById(String.valueOf(id));
         var result = BusinessRules.check(isNull(individualUser));
         if (!result.isSuccess()) {
             return (ErrorDataResult<IndividualUser>) result;
