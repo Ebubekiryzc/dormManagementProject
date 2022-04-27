@@ -6,10 +6,12 @@ import tr.edu.duzce.mf.bm.core.dataAccess.DatabaseConnection;
 import tr.edu.duzce.mf.bm.core.dataAccess.abstracts.BaseDao;
 import tr.edu.duzce.mf.bm.core.dataAccess.constants.Queries;
 import tr.edu.duzce.mf.bm.core.utilities.annotations.Id;
+import tr.edu.duzce.mf.bm.core.utilities.annotations.InheritedId;
 import tr.edu.duzce.mf.bm.core.utilities.annotations.TableColumn;
 import tr.edu.duzce.mf.bm.core.utilities.annotations.TableName;
 import tr.edu.duzce.mf.bm.core.utilities.exceptions.NotExistInDatabase;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.Blob;
@@ -40,13 +42,16 @@ public abstract class BaseDaoJDBCRepository<TEntity> implements BaseDao<TEntity>
         List<TEntity> entityList = new ArrayList<>();
         try {
             Statement statement = getDatabaseConnection().getConnection().createStatement();
-            ResultSet resultSet = statement.executeQuery(Queries.getAll(entityClass.getAnnotation(TableName.class).value()));
+            System.out.println("selam");
+            ResultSet resultSet = statement.executeQuery(Queries.getAll(entityClass.getAnnotation(TableName.class).value(), getIdColumnName()));
+            System.out.println("selam2");
             while (resultSet.next()) {
                 TEntity entity = entityClass.getDeclaredConstructor().newInstance();
                 loadResultSetIntoObject(resultSet, entity);
                 entityList.add(entity);
             }
-        } catch (SQLException | InvocationTargetException | InstantiationException | IllegalAccessException | NoSuchMethodException exception) {
+        } catch (SQLException | InvocationTargetException | InstantiationException | IllegalAccessException |
+                 NoSuchMethodException exception) {
             System.err.println(exception.getMessage() + "/45 BaseDaoJDBCRepository");
         }
         return entityList;
@@ -57,13 +62,21 @@ public abstract class BaseDaoJDBCRepository<TEntity> implements BaseDao<TEntity>
     public TEntity getById(String id) {
         try {
             Statement statement = getDatabaseConnection().getConnection().createStatement();
-            ResultSet resultSet = statement.executeQuery(Queries.get(entityClass.getAnnotation(TableName.class).value(), id));
+            Field idField = getIdField();
+
+            String idColumn = "id";
+            if (idField.getAnnotation(TableColumn.class) != null)
+                idColumn = idField.getAnnotation(TableColumn.class).name();
+
+
+            ResultSet resultSet = statement.executeQuery(Queries.get(entityClass.getAnnotation(TableName.class).value(), idColumn, id));
             while (resultSet.next()) {
                 TEntity entity = entityClass.getDeclaredConstructor().newInstance();
                 loadResultSetIntoObject(resultSet, entity);
                 return entity;
             }
-        } catch (SQLException | InvocationTargetException | InstantiationException | IllegalAccessException | NoSuchMethodException exception) {
+        } catch (SQLException | InvocationTargetException | InstantiationException | IllegalAccessException |
+                 NoSuchMethodException exception) {
             System.err.println(exception.getMessage() + "/65 BaseDaoJDBCRepository");
         }
         return null;
@@ -87,11 +100,9 @@ public abstract class BaseDaoJDBCRepository<TEntity> implements BaseDao<TEntity>
     public boolean update(TEntity tEntity) {
         try {
             Statement statement = getDatabaseConnection().getConnection().createStatement();
-            Field idField = getIdField(tEntity);
-
             String tableName = entityClass.getAnnotation(TableName.class).value();
 
-            ResultSet resultSet = statement.executeQuery(Queries.update(tableName, tEntity.toString(), getFieldStringValue(idField, tEntity)));
+            ResultSet resultSet = statement.executeQuery(Queries.update(tableName, tEntity.toString(), getIdColumnName(), getFieldStringValue(getIdField(), tEntity)));
             if (!resultSet.next()) {
                 throw new NotExistInDatabase();
             }
@@ -106,11 +117,9 @@ public abstract class BaseDaoJDBCRepository<TEntity> implements BaseDao<TEntity>
     public boolean delete(TEntity tEntity) {
         try {
             Statement statement = getDatabaseConnection().getConnection().createStatement();
-            Field idField = getIdField(tEntity);
-
             String tableName = entityClass.getAnnotation(TableName.class).value();
 
-            ResultSet resultSet = statement.executeQuery(Queries.delete(tableName, getFieldStringValue(idField, tEntity)));
+            ResultSet resultSet = statement.executeQuery(Queries.delete(tableName, getIdColumnName(), getFieldStringValue(getIdField(), tEntity)));
             if (!resultSet.next()) {
                 throw new NotExistInDatabase();
             }
@@ -119,6 +128,24 @@ public abstract class BaseDaoJDBCRepository<TEntity> implements BaseDao<TEntity>
             return false;
         }
         return true;
+    }
+
+    private String getIdColumnName() {
+        Field idField = getIdField();
+        System.out.println("selam3");
+        String idColumn = "id";
+        if (idField.getAnnotation(TableColumn.class) != null)
+            idColumn = idField.getAnnotation(TableColumn.class).name();
+
+        return idColumn;
+    }
+
+    private Field getIdField() {
+        Field idField = getFieldWithAnnotation(Id.class);
+        if (idField == null) {
+            idField = getFieldWithAnnotation(InheritedId.class);
+        }
+        return idField;
     }
 
     protected void loadResultSetIntoObject(ResultSet resultSet, TEntity entity) throws SQLException, IllegalAccessException {
@@ -145,8 +172,8 @@ public abstract class BaseDaoJDBCRepository<TEntity> implements BaseDao<TEntity>
                     bytes[i] = (byte) Integer.parseInt(byteValues[i], 2);
                 }
                 value = bytes;
-            }else if (field.getType().getSimpleName().equals("byte[]")){
-                String[] text = divideTextForEachNChar(value.toString(),8);
+            } else if (field.getType().getSimpleName().equals("byte[]")) {
+                String[] text = divideTextForEachNChar(value.toString(), 8);
                 byte[] bytes = new byte[text.length];
                 for (int i = 0; i < bytes.length; i++) {
                     bytes[i] = (byte) Integer.parseInt(text[i], 2);
@@ -154,7 +181,7 @@ public abstract class BaseDaoJDBCRepository<TEntity> implements BaseDao<TEntity>
                 value = bytes;
             }
 
-            if(value.getClass().getSimpleName().equals("Timestamp")){
+            if (value.getClass().getSimpleName().equals("Timestamp")) {
                 value = value.toString();
             }
 
@@ -234,10 +261,14 @@ public abstract class BaseDaoJDBCRepository<TEntity> implements BaseDao<TEntity>
     }
 
 
-    private Field getIdField(TEntity entity) throws NoSuchElementException {
-        Field field = null;
-        field = Stream.of(entityClass.getDeclaredFields()).filter(idField -> idField.isAnnotationPresent(Id.class)).findFirst().get();
-        field.setAccessible(true);
+    private Field getFieldWithAnnotation(Class<? extends Annotation> annotation) throws NoSuchElementException {
+        Field field;
+        try {
+            field = Stream.of(entityClass.getDeclaredFields()).filter(idField -> idField.isAnnotationPresent(annotation)).findFirst().get();
+            field.setAccessible(true);
+        } catch (Exception exception) {
+            field = null;
+        }
         return field;
     }
 

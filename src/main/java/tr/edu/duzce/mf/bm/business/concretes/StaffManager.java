@@ -5,8 +5,8 @@ import tr.edu.duzce.mf.bm.core.dataAccess.constants.Messages;
 import tr.edu.duzce.mf.bm.core.utilities.business.BusinessRules;
 import tr.edu.duzce.mf.bm.core.utilities.results.*;
 import tr.edu.duzce.mf.bm.dataAccess.abstracts.StaffDao;
-import tr.edu.duzce.mf.bm.entities.concretes.Gender;
 import tr.edu.duzce.mf.bm.entities.concretes.Staff;
+import tr.edu.duzce.mf.bm.entities.dtos.StaffDetailDto;
 
 import java.util.List;
 
@@ -24,22 +24,27 @@ public class StaffManager implements StaffService {
     }
 
     @Override
-    public DataResult<List<Staff>> getByFullName(String firstName, String lastName) {
-        List<Staff> staffList = staffDao.getByFullName(firstName, lastName);
+    public DataResult<List<StaffDetailDto>> getAllStaffDetails() {
+        return new SuccessDataResult<>(staffDao.getAllStaffDetails(), Messages.OperationSuccessful);
+    }
+
+    @Override
+    public DataResult<List<StaffDetailDto>> getByFullName(String firstName, String lastName) {
+        List<StaffDetailDto> staffList = staffDao.getStaffDetailsByFullName(firstName, lastName);
         if (staffList == null) return new ErrorDataResult<>(null, Messages.OperationFailed);
         return new SuccessDataResult<>(staffList, Messages.OperationSuccessful);
     }
 
     @Override
-    public DataResult<List<Staff>> getByFirstName(String firstName) {
-        List<Staff> staffList = staffDao.getByFirstName(firstName);
+    public DataResult<List<StaffDetailDto>> getByFirstName(String firstName) {
+        List<StaffDetailDto> staffList = staffDao.getStaffDetailsByFirstName(firstName);
         if (staffList == null) return new ErrorDataResult<>(null, Messages.OperationFailed);
         return new SuccessDataResult<>(staffList, Messages.OperationSuccessful);
     }
 
     @Override
-    public DataResult<List<Staff>> getByLastName(String lastName) {
-        List<Staff> staffList = staffDao.getByLastName(lastName);
+    public DataResult<List<StaffDetailDto>> getByLastName(String lastName) {
+        List<StaffDetailDto> staffList = staffDao.getStaffDetailsByLastName(lastName);
         if (staffList == null) return new ErrorDataResult<>(null, Messages.OperationFailed);
         return new SuccessDataResult<>(staffList, Messages.OperationSuccessful);
     }

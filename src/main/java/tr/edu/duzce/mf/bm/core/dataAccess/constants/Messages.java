@@ -12,4 +12,5 @@ public class Messages {
     public static String MustLogin = "Lütfen giriş yapınız.";
     public static String UserExists = "Bu kullanıcı adı daha önce alınmış.";
     public static String PasswordNotMatch = "Parolanız uyuşmuyor.";
+    public static String ReportCreated = "Rapor oluşturuldu.";
 }

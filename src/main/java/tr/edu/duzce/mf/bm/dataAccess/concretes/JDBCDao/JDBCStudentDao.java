@@ -1,10 +1,12 @@
 package tr.edu.duzce.mf.bm.dataAccess.concretes.JDBCDao;
 
 import tr.edu.duzce.mf.bm.core.dataAccess.concretes.BaseDaoJDBCRepository;
+import tr.edu.duzce.mf.bm.core.utilities.annotations.TableColumn;
 import tr.edu.duzce.mf.bm.dataAccess.abstracts.StudentDao;
-import tr.edu.duzce.mf.bm.entities.concretes.Staff;
 import tr.edu.duzce.mf.bm.entities.concretes.Student;
+import tr.edu.duzce.mf.bm.entities.dtos.StudentDetailDto;
 
+import java.lang.reflect.Field;
 import java.sql.CallableStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -17,8 +19,14 @@ public class JDBCStudentDao extends BaseDaoJDBCRepository<Student> implements St
     }
 
     @Override
-    public List<Student> getByFullName(String firstName, String lastName) {
-        List<Student> studentList = new ArrayList<>();
+    public List<StudentDetailDto> getAllStudentDetails() {
+        String procedureName = "get_students_by_first_name";
+        return getByFilters(procedureName, "%");
+    }
+
+    @Override
+    public List<StudentDetailDto> getByFullName(String firstName, String lastName) {
+        List<StudentDetailDto> studentList = new ArrayList<>();
         try {
             CallableStatement callableStatement = super.getDatabaseConnection().getConnection().prepareCall("call get_students_by_full_name(?,?,?)");
             callableStatement.registerOutParameter(3, oracle.jdbc.OracleTypes.CURSOR);
@@ -28,48 +36,67 @@ public class JDBCStudentDao extends BaseDaoJDBCRepository<Student> implements St
             Object outParameter = callableStatement.getObject(3);
             ResultSet resultSet = (ResultSet) outParameter;
 
-            while(resultSet.next()){
-                Student student = new Student();
-                loadResultSetIntoObject(resultSet,student);
+            while (resultSet.next()) {
+                StudentDetailDto student = new StudentDetailDto();
+                loadResultSetIntoObjectForDTO(resultSet, student);
                 studentList.add(student);
             }
         } catch (SQLException | IllegalAccessException exception) {
-            System.err.println(exception.getMessage()+ "/37 JDBCStudentDao");
+            System.err.println(exception.getMessage() + "/47 JDBCStudentDao");
             return null;
         }
         return studentList;
     }
 
-    public List<Student> getByFirstName(String firstName){
+    public List<StudentDetailDto> getByFirstName(String firstName) {
         String procedureName = "get_students_by_first_name";
         return getByFilters(procedureName, firstName);
     }
 
     @Override
-    public List<Student> getByLastName(String lastName) {
+    public List<StudentDetailDto> getByLastName(String lastName) {
         String procedureName = "get_students_by_last_name";
         return getByFilters(procedureName, lastName);
     }
 
-    private List<Student> getByFilters(String procedureName, String parameter){
-        List<Student> studentList = new ArrayList<>();
+    private List<StudentDetailDto> getByFilters(String procedureName, String parameter) {
+        List<StudentDetailDto> studentList = new ArrayList<>();
         try {
-            CallableStatement callableStatement = super.getDatabaseConnection().getConnection().prepareCall(String.format("call %s(?,?)",procedureName));
+            CallableStatement callableStatement = super.getDatabaseConnection().getConnection().prepareCall(String.format("call %s(?,?)", procedureName));
             callableStatement.registerOutParameter(2, oracle.jdbc.OracleTypes.CURSOR);
             callableStatement.setString(1, parameter);
             callableStatement.execute();
             Object outParameter = callableStatement.getObject(2);
             ResultSet resultSet = (ResultSet) outParameter;
 
-            while(resultSet.next()){
-                Student student = new Student();
-                loadResultSetIntoObject(resultSet,student);
+            while (resultSet.next()) {
+                StudentDetailDto student = new StudentDetailDto();
+                loadResultSetIntoObjectForDTO(resultSet, student);
                 studentList.add(student);
             }
         } catch (SQLException | IllegalAccessException exception) {
-            System.err.println(exception.getMessage()+ "/70 JDBCStudentDao");
+            System.err.println(exception.getMessage() + "/79 JDBCStudentDao");
             return null;
         }
         return studentList;
+    }
+
+    private void loadResultSetIntoObjectForDTO(ResultSet resultSet, StudentDetailDto studentDetailDto) throws SQLException, IllegalAccessException {
+        for (Field field : StudentDetailDto.class.getDeclaredFields()) {
+            field.setAccessible(true);
+
+            String column = field.getName();
+            if (field.getAnnotation(TableColumn.class) != null) {
+                column = field.getAnnotation(TableColumn.class).name();
+            }
+
+            Object value = resultSet.getObject(column);
+
+            if (value.getClass().getSimpleName().equals("Timestamp")) {
+                value = value.toString();
+            }
+
+            field.set(studentDetailDto, value);
+        }
     }
 }

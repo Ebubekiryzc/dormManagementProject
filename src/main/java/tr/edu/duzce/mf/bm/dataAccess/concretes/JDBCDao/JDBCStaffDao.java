@@ -1,10 +1,12 @@
 package tr.edu.duzce.mf.bm.dataAccess.concretes.JDBCDao;
 
 import tr.edu.duzce.mf.bm.core.dataAccess.concretes.BaseDaoJDBCRepository;
+import tr.edu.duzce.mf.bm.core.utilities.annotations.TableColumn;
 import tr.edu.duzce.mf.bm.dataAccess.abstracts.StaffDao;
-import tr.edu.duzce.mf.bm.entities.concretes.IndividualUser;
 import tr.edu.duzce.mf.bm.entities.concretes.Staff;
+import tr.edu.duzce.mf.bm.entities.dtos.StaffDetailDto;
 
+import java.lang.reflect.Field;
 import java.sql.CallableStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -17,8 +19,14 @@ public class JDBCStaffDao extends BaseDaoJDBCRepository<Staff> implements StaffD
     }
 
     @Override
-    public List<Staff> getByFullName(String firstName, String lastName) {
-        List<Staff> staffList = new ArrayList<>();
+    public List<StaffDetailDto> getAllStaffDetails() {
+        String procedureName = "get_staffs_by_first_name";
+        return getByFilters(procedureName, "%");
+    }
+
+    @Override
+    public List<StaffDetailDto> getStaffDetailsByFullName(String firstName, String lastName) {
+        List<StaffDetailDto> staffList = new ArrayList<>();
         try {
             CallableStatement callableStatement = super.getDatabaseConnection().getConnection().prepareCall("call get_staffs_by_full_name(?,?,?)");
             callableStatement.registerOutParameter(3, oracle.jdbc.OracleTypes.CURSOR);
@@ -28,49 +36,68 @@ public class JDBCStaffDao extends BaseDaoJDBCRepository<Staff> implements StaffD
             Object outParameter = callableStatement.getObject(3);
             ResultSet resultSet = (ResultSet) outParameter;
 
-            while(resultSet.next()){
-                Staff staff = new Staff();
-                loadResultSetIntoObject(resultSet,staff);
+            while (resultSet.next()) {
+                StaffDetailDto staff = new StaffDetailDto();
+                loadResultSetIntoObjectForDTO(resultSet, staff);
                 staffList.add(staff);
             }
         } catch (SQLException | IllegalAccessException exception) {
-            System.err.println(exception.getMessage()+ "/37 JDBCStaffDao");
+            System.err.println(exception.getMessage() + "/45 JDBCStaffDao");
             return null;
         }
         return staffList;
     }
 
-    public List<Staff> getByFirstName(String firstName){
+    public List<StaffDetailDto> getStaffDetailsByFirstName(String firstName) {
         String procedureName = "get_staffs_by_first_name";
         return getByFilters(procedureName, firstName);
     }
 
     @Override
-    public List<Staff> getByLastName(String lastName) {
+    public List<StaffDetailDto> getStaffDetailsByLastName(String lastName) {
         String procedureName = "get_staffs_by_last_name";
         return getByFilters(procedureName, lastName);
     }
 
-    private List<Staff> getByFilters(String procedureName, String parameter){
-        List<Staff> staffList = new ArrayList<>();
+    private List<StaffDetailDto> getByFilters(String procedureName, String parameter) {
+        List<StaffDetailDto> staffList = new ArrayList<>();
         try {
-            CallableStatement callableStatement = super.getDatabaseConnection().getConnection().prepareCall(String.format("call %s(?,?)",procedureName));
+            CallableStatement callableStatement = super.getDatabaseConnection().getConnection().prepareCall(String.format("call %s(?,?)", procedureName));
             callableStatement.registerOutParameter(2, oracle.jdbc.OracleTypes.CURSOR);
             callableStatement.setString(1, parameter);
             callableStatement.execute();
             Object outParameter = callableStatement.getObject(2);
             ResultSet resultSet = (ResultSet) outParameter;
 
-            while(resultSet.next()){
-                Staff staff = new Staff();
-                loadResultSetIntoObject(resultSet,staff);
+            while (resultSet.next()) {
+                StaffDetailDto staff = new StaffDetailDto();
+                loadResultSetIntoObjectForDTO(resultSet, staff);
                 staffList.add(staff);
             }
         } catch (SQLException | IllegalAccessException exception) {
-            System.err.println(exception.getMessage()+ "/70 JDBCStaffDao");
+            System.err.println(exception.getMessage() + "/74 JDBCStaffDao");
             return null;
         }
         return staffList;
+    }
+
+    private void loadResultSetIntoObjectForDTO(ResultSet resultSet, StaffDetailDto staffDetailDto) throws SQLException, IllegalAccessException {
+        for (Field field : StaffDetailDto.class.getDeclaredFields()) {
+            field.setAccessible(true);
+
+            String column = field.getName();
+            if (field.getAnnotation(TableColumn.class) != null) {
+                column = field.getAnnotation(TableColumn.class).name();
+            }
+
+            Object value = resultSet.getObject(column);
+
+            if (value.getClass().getSimpleName().equals("Timestamp")) {
+                value = value.toString();
+            }
+
+            field.set(staffDetailDto, value);
+        }
     }
 
 }

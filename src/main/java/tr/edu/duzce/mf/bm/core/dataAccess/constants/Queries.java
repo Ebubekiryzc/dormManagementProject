@@ -1,12 +1,14 @@
 package tr.edu.duzce.mf.bm.core.dataAccess.constants;
 
 public class Queries {
-    public static String getAll(String tableName) {
-        return String.format("Select * from %s order by id", tableName);
+    public static String getAll(String tableName, String idColumn) {
+        System.out.println(String.format("Select * from %s order by %s", tableName, idColumn));
+        return String.format("Select * from %s order by %s", tableName, idColumn);
     }
 
-    public static String get(String tableName, String id) {
-        return String.format("Select * from %s where id=%s", tableName, id);
+    public static String get(String tableName,String idColumn, String id) {
+        System.out.println(String.format("Select * from %s where %s=%s", tableName, idColumn, id));
+        return String.format("Select * from %s where %s=%s", tableName, idColumn, id);
     }
 
     public static String add(String tableName, String columnNames,String entity) {
@@ -14,12 +16,12 @@ public class Queries {
         return String.format("Insert Into %s(%s) values(%s)", tableName, columnNames, entity);
     }
 
-    public static String update(String tableName, String entity, String id) {
-        return String.format("Update %s set %s where id=%s", tableName, entity, id);
+    public static String update(String tableName, String entity, String idColumn, String id) {
+        return String.format("Update %s set %s where %s=%s", tableName, entity, idColumn, id);
     }
 
-    public static String delete(String tableName, String id) {
-        return String.format("Delete from %s where id=%s", tableName, id);
+    public static String delete(String tableName, String idColumn, String id) {
+        return String.format("Delete from %s where %s=%s", tableName, idColumn, id);
     }
 
     public static String getByUsername(String tableName, String username) {

@@ -9,6 +9,7 @@ import tr.edu.duzce.mf.bm.dataAccess.abstracts.StudentDao;
 import tr.edu.duzce.mf.bm.entities.concretes.Gender;
 import tr.edu.duzce.mf.bm.entities.concretes.Staff;
 import tr.edu.duzce.mf.bm.entities.concretes.Student;
+import tr.edu.duzce.mf.bm.entities.dtos.StudentDetailDto;
 
 import java.util.List;
 
@@ -23,6 +24,11 @@ public class StudentManager implements StudentService {
     @Override
     public DataResult<List<Student>> getAll() {
         return new SuccessDataResult<>(studentDao.getAll(), Messages.OperationSuccessful);
+    }
+
+    @Override
+    public DataResult<List<StudentDetailDto>> getAllStudentDetails() {
+        return new SuccessDataResult<>(studentDao.getAllStudentDetails(), Messages.OperationSuccessful);
     }
 
     @Override
@@ -57,22 +63,22 @@ public class StudentManager implements StudentService {
     }
 
     @Override
-    public DataResult<List<Student>> getByFullName(String firstName, String lastName) {
-        List<Student> studentList = studentDao.getByFullName(firstName, lastName);
+    public DataResult<List<StudentDetailDto>> getByFullName(String firstName, String lastName) {
+        List<StudentDetailDto> studentList = studentDao.getByFullName(firstName, lastName);
         if (studentList == null) return new ErrorDataResult<>(null, Messages.OperationFailed);
         return new SuccessDataResult<>(studentList, Messages.OperationSuccessful);
     }
 
     @Override
-    public DataResult<List<Student>> getByFirstName(String firstName) {
-        List<Student> studentList = studentDao.getByFirstName(firstName);
+    public DataResult<List<StudentDetailDto>> getByFirstName(String firstName) {
+        List<StudentDetailDto> studentList = studentDao.getByFirstName(firstName);
         if (studentList == null) return new ErrorDataResult<>(null, Messages.OperationFailed);
         return new SuccessDataResult<>(studentList, Messages.OperationSuccessful);
     }
 
     @Override
-    public DataResult<List<Student>> getByLastName(String lastName) {
-        List<Student> studentList = studentDao.getByLastName(lastName);
+    public DataResult<List<StudentDetailDto>> getByLastName(String lastName) {
+        List<StudentDetailDto> studentList = studentDao.getByLastName(lastName);
         if (studentList == null) return new ErrorDataResult<>(null, Messages.OperationFailed);
         return new SuccessDataResult<>(studentList, Messages.OperationSuccessful);
     }

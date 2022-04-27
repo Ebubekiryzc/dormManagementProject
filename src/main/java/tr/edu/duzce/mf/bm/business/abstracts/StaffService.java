@@ -2,19 +2,21 @@ package tr.edu.duzce.mf.bm.business.abstracts;
 
 import tr.edu.duzce.mf.bm.core.utilities.results.DataResult;
 import tr.edu.duzce.mf.bm.core.utilities.results.Result;
-import tr.edu.duzce.mf.bm.entities.concretes.Gender;
 import tr.edu.duzce.mf.bm.entities.concretes.Staff;
+import tr.edu.duzce.mf.bm.entities.dtos.StaffDetailDto;
 
 import java.util.List;
 
 public interface StaffService {
     public DataResult<List<Staff>> getAll();
 
-    public DataResult<List<Staff>> getByFullName(String firstName, String lastName);
+    public DataResult<List<StaffDetailDto>> getAllStaffDetails();
 
-    public DataResult<List<Staff>> getByFirstName(String firstName);
+    public DataResult<List<StaffDetailDto>> getByFullName(String firstName, String lastName);
 
-    DataResult<List<Staff>> getByLastName(String lastName);
+    public DataResult<List<StaffDetailDto>> getByFirstName(String firstName);
+
+    DataResult<List<StaffDetailDto>> getByLastName(String lastName);
 
     public DataResult<Staff> getById(int id);
 
