@@ -122,6 +122,12 @@
             <artifactId>jasperreports-fonts</artifactId>
             <version>6.19.1</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/com.opencsv/opencsv -->
+        <dependency>
+            <groupId>com.opencsv</groupId>
+            <artifactId>opencsv</artifactId>
+            <version>5.6</version>
+        </dependency>
 
     </dependencies>
 

@@ -42,9 +42,7 @@ public abstract class BaseDaoJDBCRepository<TEntity> implements BaseDao<TEntity>
         List<TEntity> entityList = new ArrayList<>();
         try {
             Statement statement = getDatabaseConnection().getConnection().createStatement();
-            System.out.println("selam");
             ResultSet resultSet = statement.executeQuery(Queries.getAll(entityClass.getAnnotation(TableName.class).value(), getIdColumnName()));
-            System.out.println("selam2");
             while (resultSet.next()) {
                 TEntity entity = entityClass.getDeclaredConstructor().newInstance();
                 loadResultSetIntoObject(resultSet, entity);
@@ -132,7 +130,6 @@ public abstract class BaseDaoJDBCRepository<TEntity> implements BaseDao<TEntity>
 
     private String getIdColumnName() {
         Field idField = getIdField();
-        System.out.println("selam3");
         String idColumn = "id";
         if (idField.getAnnotation(TableColumn.class) != null)
             idColumn = idField.getAnnotation(TableColumn.class).name();

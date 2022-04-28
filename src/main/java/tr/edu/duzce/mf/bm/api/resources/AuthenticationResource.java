@@ -36,9 +36,6 @@ import tr.edu.duzce.mf.bm.entities.dtos.StudentRegisterDto;
 public class AuthenticationResource {
 
     private AuthService authService;
-    private UserService userService;
-    private OperationClaimService operationClaimService;
-    private TokenGenerator tokenGenerator;
 
     public AuthenticationResource() {
         this.authService = new AuthManager(

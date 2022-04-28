@@ -13,7 +13,10 @@ public class DatabaseConnection {
     private static Connection connection;
     private String url = "jdbc:oracle:thin:@localhost:1521:xe";
     private String url2 = "jdbc:postgresql://localhost/denemeler?user=postgres&password=12345";
+
+    @Getter
     private String username = "admin";
+    @Getter
     private String password = "admin";
 
     private DatabaseConnection() throws SQLException {

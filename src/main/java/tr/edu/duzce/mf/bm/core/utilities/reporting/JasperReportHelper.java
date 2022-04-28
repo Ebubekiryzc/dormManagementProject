@@ -1,7 +1,5 @@
 package tr.edu.duzce.mf.bm.core.utilities.reporting;
 
-import lombok.Getter;
-import lombok.Setter;
 import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import tr.edu.duzce.mf.bm.core.dataAccess.constants.Messages;
@@ -24,5 +22,6 @@ public class JasperReportHelper<TEntity> {
         JasperReport jasperReport = JasperCompileManager.compileReport(reportPath);
         JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, null, dataSource);
         JasperExportManager.exportReportToPdfFile(jasperPrint, pdfPath);
+        System.out.println(Messages.ReportCreated);
     }
 }
