@@ -1,5 +1,6 @@
 package tr.edu.duzce.mf.bm.api.resources;
 
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import tr.edu.duzce.mf.bm.business.abstracts.DepartmentService;
@@ -20,6 +21,7 @@ public class DepartmentResource {
     }
 
     @GET
+    @RolesAllowed({"admin", "staff"})
     @Produces(MediaType.APPLICATION_JSON)
     public DataResult<List<Department>> getAll() {
         return this.departmentService.getAll();

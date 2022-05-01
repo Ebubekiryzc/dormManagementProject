@@ -9,6 +9,6 @@ public class ExceptionMapper implements jakarta.ws.rs.ext.ExceptionMapper<Except
     @Override
     public Response toResponse(Exception exception) {
         ErrorResult errorResult = new ErrorResult(exception.getMessage());
-        return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(errorResult).build();
+        return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(exception.getMessage()).build();
     }
 }

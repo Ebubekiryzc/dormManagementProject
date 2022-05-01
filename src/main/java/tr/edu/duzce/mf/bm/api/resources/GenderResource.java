@@ -31,7 +31,7 @@ public class GenderResource {
     }
 
     @GET
-    @PermitAll
+    @RolesAllowed({"admin", "staff"})
     @Produces(MediaType.APPLICATION_JSON)
     public DataResult<List<Gender>> getAll() {
         return this.genderService.getAll();

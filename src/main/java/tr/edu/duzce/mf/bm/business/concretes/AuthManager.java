@@ -45,7 +45,7 @@ public class AuthManager implements AuthService {
     public DataResult<String> login(AuthenticateUserDTO userCredentials) {
         String username = userCredentials.getUsername();
         var result = userExist(username);
-        if(!result.isSuccess()){
+        if (!result.isSuccess()) {
             return new ErrorDataResult<>(Messages.UserNotFound);
         }
 
@@ -54,12 +54,12 @@ public class AuthManager implements AuthService {
         saltAndPepperModel.setSalt(user.getPasswordSalt());
         saltAndPepperModel.setHash(user.getPasswordHash());
 
-        if(!HashingHelper.verifyHash(userCredentials.getPassword(), saltAndPepperModel)){
+        if (!HashingHelper.verifyHash(userCredentials.getPassword(), saltAndPepperModel)) {
             return new ErrorDataResult<>(Messages.PasswordNotMatch);
         }
 
         List<OperationClaim> roles = operationClaimService.getUserClaims(user).getEntity();
-        String accessToken = tokenGenerator.generateToken(roles);
+        String accessToken = tokenGenerator.generateToken(roles, user.getId().intValue());
         return new SuccessDataResult<>(accessToken, Messages.OperationSuccessful);
     }
 
@@ -77,7 +77,7 @@ public class AuthManager implements AuthService {
         student.setRoomNumber(studentRegisterDto.getRoomNumber());
         student.setIndividualUserId(user.getId());
         var result = studentService.add(student);
-        if(result.isSuccess()) {
+        if (result.isSuccess()) {
             addUserOperationClaims(user.getId(), studentRegisterDto.getRoles());
             return new SuccessResult(Messages.OperationSuccessful);
         }
@@ -96,7 +96,7 @@ public class AuthManager implements AuthService {
         staff.setDateOfStart(staffRegisterDto.getDateOfStart());
         staff.setSalary(staffRegisterDto.getSalary());
         var result = staffService.add(staff);
-        if(result.isSuccess()) {
+        if (result.isSuccess()) {
             addUserOperationClaims(user.getId(), staffRegisterDto.getRoles());
             return new SuccessResult(Messages.OperationSuccessful);
         }
@@ -106,27 +106,26 @@ public class AuthManager implements AuthService {
 
     private DataResult<User> userExist(String username) {
         User user = userService.getByUsername(username).getEntity();
-        if(user == null){
-            return new ErrorDataResult<>(null,Messages.UserNotFound);
+        if (user == null) {
+            return new ErrorDataResult<>(null, Messages.UserNotFound);
         }
         return new SuccessDataResult<>(user, Messages.OperationSuccessful);
     }
 
     private void addUserOperationClaims(BigDecimal userId, List<OperationClaim> roleSet) {
-        for (OperationClaim role: roleSet){
+        for (OperationClaim role : roleSet) {
             OperationClaim operationClaim = operationClaimService.getByName(role.getName()).getEntity();
             UserOperationClaim userOperationClaim = new UserOperationClaim();
             userOperationClaim.setUserId(userId);
             userOperationClaim.setOperationClaimId(operationClaim.getId());
-            userOperationClaimService.add(userOperationClaim);
+            var result = userOperationClaimService.add(userOperationClaim);
         }
     }
 
-    private User userAdd(AuthenticateUserDTO authenticateUserDTO)
-    {
+    private User userAdd(AuthenticateUserDTO authenticateUserDTO) {
         SaltAndPepperModel saltAndPepperModel = new SaltAndPepperModel();
         User user = new User();
-        HashingHelper.generateHash(authenticateUserDTO.getPassword(),saltAndPepperModel);
+        HashingHelper.generateHash(authenticateUserDTO.getPassword(), saltAndPepperModel);
 
         user.setUsername(authenticateUserDTO.getUsername());
         user.setPasswordSalt(saltAndPepperModel.getSalt());
@@ -136,7 +135,7 @@ public class AuthManager implements AuthService {
         return user;
     }
 
-    private IndividualUser individualUserAdd(IndividualUserRegisterDto individualUserRegisterDto){
+    private IndividualUser individualUserAdd(IndividualUserRegisterDto individualUserRegisterDto) {
         String username = individualUserRegisterDto.getAuthenticateUserDTO().getUsername();
         User user = userService.getByUsername(username).getEntity();
 

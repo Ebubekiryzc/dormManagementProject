@@ -9,6 +9,7 @@ import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import tr.edu.duzce.mf.bm.business.abstracts.AuthService;
 import tr.edu.duzce.mf.bm.business.abstracts.OperationClaimService;
 import tr.edu.duzce.mf.bm.business.abstracts.UserService;
@@ -31,7 +32,6 @@ import tr.edu.duzce.mf.bm.entities.dtos.StudentRegisterDto;
 //TODO: Öğrenci ve görevlileri getirirken bir DTO yazıp bütün ilgili entity bilgileri getirilebilir.
 
 @Path("/authenticate")
-@Singleton
 @Resource
 public class AuthenticationResource {
 
@@ -49,13 +49,15 @@ public class AuthenticationResource {
         );
     }
 
+
     @POST
     @Path("/login")
     @PermitAll
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public DataResult<String> login(AuthenticateUserDTO userCredentials){
-        return authService.login(userCredentials);
+    public Response login(AuthenticateUserDTO userCredentials) {
+        Response response = Response.status(Response.Status.OK).entity(authService.login(userCredentials)).build();
+        return response;
     }
 
 
@@ -64,7 +66,7 @@ public class AuthenticationResource {
     @PermitAll
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Result registerStudent(StudentRegisterDto studentRegisterDto){
+    public Result registerStudent(StudentRegisterDto studentRegisterDto) {
         return authService.registerStudent(studentRegisterDto);
     }
 
@@ -73,7 +75,7 @@ public class AuthenticationResource {
     @PermitAll
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Result registerStaff(StaffRegisterDto staffRegisterDto){
+    public Result registerStaff(StaffRegisterDto staffRegisterDto) {
         return authService.registerStaff(staffRegisterDto);
     }
 }

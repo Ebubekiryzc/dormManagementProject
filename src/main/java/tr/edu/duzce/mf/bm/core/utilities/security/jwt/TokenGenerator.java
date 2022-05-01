@@ -13,7 +13,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class TokenGenerator {
-    public String generateToken(List<OperationClaim> roles){
+    public String generateToken(List<OperationClaim> roles, int userId) {
         String token = "";
         String subject = "appuser";
         String secret = getSecretKey();
@@ -23,14 +23,14 @@ public class TokenGenerator {
 
 
         // Signature algoritmasını tanıtma
-        SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS512;
+        SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
 
         // Token expiry için süre
         long currentTimeMilliseconds = System.currentTimeMillis();
         Date now = new Date(currentTimeMilliseconds);
 
         // Api şifresi
-        byte[] apiSecretKeyBytes = DatatypeConverter.parseBase64Binary(getSecretKey());
+        byte[] apiSecretKeyBytes = DatatypeConverter.parseBase64Binary(secret);
         Key signingKey = new SecretKeySpec(apiSecretKeyBytes, signatureAlgorithm.getJcaName());
 
         // JWT
@@ -39,10 +39,11 @@ public class TokenGenerator {
                 .setIssuer(issuer)
                 .setSubject(subject)
                 .setId(id)
-                .claim("roles",roles.stream().map(operationClaim -> operationClaim.getName()).collect(Collectors.joining(",")))
+                .claim("roles", roles.stream().map(operationClaim -> operationClaim.getName()).collect(Collectors.joining(",")))
+                .claim("userId", userId)
                 .signWith(signatureAlgorithm, signingKey);
 
-        if(timeToLiveMilliseconds >= 0){
+        if (timeToLiveMilliseconds >= 0) {
             long expirationMillis = currentTimeMilliseconds + timeToLiveMilliseconds;
             Date expire = new Date(expirationMillis);
             builder.setExpiration(expire);
@@ -56,7 +57,7 @@ public class TokenGenerator {
         return 3600000; // 1 saat
     }
 
-    public Boolean IsValid(String accessToken, Set<String> roleSet){
+    public Boolean IsValid(String accessToken, Set<String> roleSet) {
         Boolean result = false;
         try {
             Claims claims = Jwts.parser()
@@ -64,27 +65,27 @@ public class TokenGenerator {
                     .parseClaimsJws(accessToken).getBody();
 
             // Rolleri çıkaralım:
-            String roles = claims.get("roles",String.class);
+            String roles = claims.get("roles", String.class);
             Set<String> claimRoles = new HashSet<String>(Arrays.asList(roles.split(",")));
             roleSet.retainAll(claimRoles);
 
             if (claims.getId().equals(getId()) && claims.getIssuer().equals(getIssuer()) && roleSet.size() >= 1)
                 result = true;
-        }catch (Exception exception){
+        } catch (Exception exception) {
             exception.printStackTrace();
         }
         return result;
     }
 
-    private String getIssuer(){
+    private String getIssuer() {
         return "duzceuniversity";
     }
 
-    private String getId(){
+    private String getId() {
         return "duzce.mf.bm";
     }
 
-    private String getSecretKey(){
+    private String getSecretKey() {
         return "mysupersecretkey";
     }
 }

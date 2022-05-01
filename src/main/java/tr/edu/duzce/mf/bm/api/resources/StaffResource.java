@@ -87,7 +87,7 @@ public class StaffResource {
                     .build();
         } catch (Exception exception) {
             var result = new ErrorResult(exception.getMessage() + "/69 StaffResource");
-            return Response.status(Response.Status.BAD_REQUEST).entity(result).build();
+            return Response.status(Response.Status.BAD_REQUEST).entity(exception.getMessage()).build();
         }
     }
 
