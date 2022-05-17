@@ -1,5 +1,6 @@
 package tr.edu.duzce.mf.bm.api.resources;
 
+import jakarta.annotation.security.PermitAll;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import tr.edu.duzce.mf.bm.business.abstracts.IndividualUserService;
@@ -11,7 +12,7 @@ import tr.edu.duzce.mf.bm.entities.concretes.IndividualUser;
 
 import java.util.List;
 
-@Path("/individualUsers")
+@Path("/individual_users")
 public class IndividualUserResource {
     private IndividualUserService individualUserService;
 
@@ -27,6 +28,7 @@ public class IndividualUserResource {
 
     @GET
     @Path("/{id}")
+    @PermitAll
     @Produces(MediaType.APPLICATION_JSON)
     public DataResult<IndividualUser> getById(@PathParam("id") int id) {
         return this.individualUserService.getById(id);

@@ -12,6 +12,8 @@ public interface GenderService {
 
     public DataResult<Gender> getById(int id);
 
+    public DataResult<Gender> getByName(String name);
+
     public Result add(Gender gender);
 
     public Result update(Gender gender);

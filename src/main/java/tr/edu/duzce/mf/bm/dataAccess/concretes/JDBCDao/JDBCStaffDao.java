@@ -27,8 +27,9 @@ public class JDBCStaffDao extends BaseDaoJDBCRepository<Staff> implements StaffD
     @Override
     public List<StaffDetailDto> getStaffDetailsByFullName(String firstName, String lastName) {
         List<StaffDetailDto> staffList = new ArrayList<>();
+        CallableStatement callableStatement = null;
         try {
-            CallableStatement callableStatement = super.getDatabaseConnection().getConnection().prepareCall("call get_staffs_by_full_name(?,?,?)");
+            callableStatement = super.getDatabaseConnection().getConnection().prepareCall("call get_staffs_by_full_name(?,?,?)");
             callableStatement.registerOutParameter(3, oracle.jdbc.OracleTypes.CURSOR);
             callableStatement.setString(1, firstName);
             callableStatement.setString(2, lastName);
@@ -42,8 +43,17 @@ public class JDBCStaffDao extends BaseDaoJDBCRepository<Staff> implements StaffD
                 staffList.add(staff);
             }
         } catch (SQLException | IllegalAccessException exception) {
-            System.err.println(exception.getMessage() + "/45 JDBCStaffDao");
-            return null;
+            System.err.println(exception.getMessage() + "/46 JDBCStaffDao");
+            staffList = null;
+        } finally {
+            try {
+                if (callableStatement != null)
+                    callableStatement.close();
+
+            } catch (SQLException exception) {
+                System.err.println(exception.getMessage() + "/54 JDBCStaffDao");
+                staffList = null;
+            }
         }
         return staffList;
     }
@@ -61,8 +71,9 @@ public class JDBCStaffDao extends BaseDaoJDBCRepository<Staff> implements StaffD
 
     private List<StaffDetailDto> getByFilters(String procedureName, String parameter) {
         List<StaffDetailDto> staffList = new ArrayList<>();
+        CallableStatement callableStatement = null;
         try {
-            CallableStatement callableStatement = super.getDatabaseConnection().getConnection().prepareCall(String.format("call %s(?,?)", procedureName));
+            callableStatement = super.getDatabaseConnection().getConnection().prepareCall(String.format("call %s(?,?)", procedureName));
             callableStatement.registerOutParameter(2, oracle.jdbc.OracleTypes.CURSOR);
             callableStatement.setString(1, parameter);
             callableStatement.execute();
@@ -75,8 +86,17 @@ public class JDBCStaffDao extends BaseDaoJDBCRepository<Staff> implements StaffD
                 staffList.add(staff);
             }
         } catch (SQLException | IllegalAccessException exception) {
-            System.err.println(exception.getMessage() + "/74 JDBCStaffDao");
-            return null;
+            System.err.println(exception.getMessage() + "/89 JDBCStaffDao");
+            staffList = null;
+        } finally {
+            try {
+                if (callableStatement != null)
+                    callableStatement.close();
+
+            } catch (SQLException exception) {
+                System.err.println(exception.getMessage() + "/97 JDBCStaffDao");
+                staffList = null;
+            }
         }
         return staffList;
     }

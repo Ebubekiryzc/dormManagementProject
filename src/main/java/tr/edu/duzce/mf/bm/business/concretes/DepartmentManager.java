@@ -33,6 +33,11 @@ public class DepartmentManager implements DepartmentService {
     }
 
     @Override
+    public DataResult<Department> getByFacultyIdAndName(String facultyId, String name) {
+        return new SuccessDataResult<>(this.departmentDao.getByFacultyIdAndName(facultyId, name), Messages.OperationSuccessful);
+    }
+
+    @Override
     public Result add(Department department) {
         boolean isAdded = departmentDao.add(department);
         if (isAdded) return new SuccessResult(Messages.OperationSuccessful);

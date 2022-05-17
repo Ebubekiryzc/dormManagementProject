@@ -4,6 +4,7 @@ import tr.edu.duzce.mf.bm.core.utilities.results.DataResult;
 import tr.edu.duzce.mf.bm.core.utilities.results.Result;
 import tr.edu.duzce.mf.bm.entities.concretes.Staff;
 import tr.edu.duzce.mf.bm.entities.dtos.StaffDetailDto;
+import tr.edu.duzce.mf.bm.entities.dtos.StaffRegisterDto;
 
 import java.util.List;
 
@@ -22,7 +23,7 @@ public interface StaffService {
 
     public Result add(Staff staff);
 
-    public Result update(Staff staff);
+    public Result update(StaffRegisterDto staff);
 
     public Result delete(Staff staff);
 

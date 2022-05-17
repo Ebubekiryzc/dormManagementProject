@@ -4,4 +4,5 @@ import tr.edu.duzce.mf.bm.core.dataAccess.abstracts.BaseDao;
 import tr.edu.duzce.mf.bm.entities.concretes.Gender;
 
 public interface GenderDao extends BaseDao<Gender> {
+    public Gender getByName(String name);
 }

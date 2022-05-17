@@ -6,21 +6,23 @@ public class Queries {
         return String.format("Select * from %s order by %s", tableName, idColumn);
     }
 
-    public static String get(String tableName,String idColumn, String id) {
+    public static String get(String tableName, String idColumn, String id) {
         System.out.println(String.format("Select * from %s where %s=%s", tableName, idColumn, id));
         return String.format("Select * from %s where %s=%s", tableName, idColumn, id);
     }
 
-    public static String add(String tableName, String columnNames,String entity) {
+    public static String add(String tableName, String columnNames, String entity) {
         System.out.println(String.format("Insert Into %s(%s) values(%s)", tableName, columnNames, entity));
         return String.format("Insert Into %s(%s) values(%s)", tableName, columnNames, entity);
     }
 
     public static String update(String tableName, String entity, String idColumn, String id) {
+        System.out.println(String.format("Update %s set %s where %s=%s", tableName, entity, idColumn, id));
         return String.format("Update %s set %s where %s=%s", tableName, entity, idColumn, id);
     }
 
     public static String delete(String tableName, String idColumn, String id) {
+        System.out.println(String.format("Delete from %s where %s=%s", tableName, idColumn, id));
         return String.format("Delete from %s where %s=%s", tableName, idColumn, id);
     }
 
@@ -38,7 +40,8 @@ public class Queries {
                 id);
     }
 
-    public static String getClaimByName(String claimTable, String nameColumn, String nameValue) {
-        return String.format("Select * from %s where %s='%s'",claimTable, nameColumn, nameValue);
+    public static String getObjectBy(String table, String predicate) {
+        System.out.println(String.format("Select * from %s where %s", table, predicate));
+        return String.format("Select * from %s where %s", table, predicate);
     }
 }

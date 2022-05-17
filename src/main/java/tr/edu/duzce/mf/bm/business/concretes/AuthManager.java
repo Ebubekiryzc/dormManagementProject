@@ -18,6 +18,7 @@ import tr.edu.duzce.mf.bm.entities.dtos.StaffRegisterDto;
 import tr.edu.duzce.mf.bm.entities.dtos.StudentRegisterDto;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 //TODO: Burada user varsa ekleme gibi kontroller henüz yok!
@@ -25,18 +26,23 @@ import java.util.List;
 public class AuthManager implements AuthService {
     private UserService userService;
     private IndividualUserService individualUserService;
+    private DepartmentService departmentService;
+
+    private GenderService genderService;
+    private OperationClaimService operationClaimService;
     private StudentService studentService;
     private StaffService staffService;
-    private OperationClaimService operationClaimService;
     private UserOperationClaimService userOperationClaimService;
     private TokenGenerator tokenGenerator;
 
-    public AuthManager(UserService userService, IndividualUserService individualUserService, StudentService studentService, StaffService staffService, OperationClaimService operationClaimService, UserOperationClaimService userOperationClaimService, TokenGenerator tokenGenerator) {
+    public AuthManager(UserService userService, IndividualUserService individualUserService, DepartmentService departmentService, GenderService genderService, OperationClaimService operationClaimService, StudentService studentService, StaffService staffService, UserOperationClaimService userOperationClaimService, TokenGenerator tokenGenerator) {
         this.userService = userService;
         this.individualUserService = individualUserService;
+        this.departmentService = departmentService;
+        this.genderService = genderService;
+        this.operationClaimService = operationClaimService;
         this.studentService = studentService;
         this.staffService = staffService;
-        this.operationClaimService = operationClaimService;
         this.userOperationClaimService = userOperationClaimService;
         this.tokenGenerator = tokenGenerator;
     }
@@ -73,7 +79,7 @@ public class AuthManager implements AuthService {
         Student student = new Student();
         student.setBlockCode(studentRegisterDto.getBlockCode());
         student.setDateOfEntry(studentRegisterDto.getDateOfEntry());
-        student.setDepartmentId(studentRegisterDto.getDepartmentId());
+        student.setDepartmentId(departmentService.getByFacultyIdAndName(studentRegisterDto.getFacultyId(), studentRegisterDto.getDepartmentName()).getEntity().getId());
         student.setRoomNumber(studentRegisterDto.getRoomNumber());
         student.setIndividualUserId(user.getId());
         var result = studentService.add(student);
@@ -91,13 +97,19 @@ public class AuthManager implements AuthService {
 
         User user = userService.getByUsername(staffRegisterDto.getIndividualUserRegisterDto().getAuthenticateUserDTO().getUsername()).getEntity();
 
+        System.out.println("1");
         Staff staff = new Staff();
         staff.setIndividualUserId(user.getId());
         staff.setDateOfStart(staffRegisterDto.getDateOfStart());
         staff.setSalary(staffRegisterDto.getSalary());
         var result = staffService.add(staff);
+        System.out.println("3");
         if (result.isSuccess()) {
-            addUserOperationClaims(user.getId(), staffRegisterDto.getRoles());
+            DataResult<OperationClaim> operationClaimDataResult = operationClaimService.getByName(staffRegisterDto.getRoleName());
+            List<OperationClaim> operationClaims = new ArrayList<>();
+            operationClaims.add(operationClaimDataResult.getEntity());
+
+            addUserOperationClaims(user.getId(), operationClaims);
             return new SuccessResult(Messages.OperationSuccessful);
         }
         return result;
@@ -144,7 +156,7 @@ public class AuthManager implements AuthService {
         individualUser.setFirstName(individualUserRegisterDto.getFirstName());
         individualUser.setLastName(individualUserRegisterDto.getLastName());
         individualUser.setDayOffLimit(individualUserRegisterDto.getDayOffLimit());
-        individualUser.setGenderId(individualUserRegisterDto.getGenderId());
+        individualUser.setGenderId(genderService.getByName(individualUserRegisterDto.getGenderName()).getEntity().getId());
         Result result = individualUserService.add(individualUser);
         return individualUser;
     }

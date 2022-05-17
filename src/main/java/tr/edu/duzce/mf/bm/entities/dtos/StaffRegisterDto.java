@@ -10,7 +10,7 @@ import java.util.List;
 public class StaffRegisterDto {
     private IndividualUserRegisterDto individualUserRegisterDto;
 
-    private List<OperationClaim> roles;
+    private String roleName;
 
     private String dateOfStart;
     private BigDecimal salary;

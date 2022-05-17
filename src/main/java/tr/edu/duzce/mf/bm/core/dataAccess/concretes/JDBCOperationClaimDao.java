@@ -24,16 +24,17 @@ public class JDBCOperationClaimDao extends BaseDaoJDBCRepository<OperationClaim>
     }
 
     @Override
-    public List<OperationClaim> getClaims(User user){
+    public List<OperationClaim> getClaims(User user) {
         List<OperationClaim> operationClaims = new ArrayList<>();
+        Statement statement = null;
         try {
-            Statement statement = DatabaseConnection.getInstance().getConnection().createStatement();
+            statement = DatabaseConnection.getInstance().getConnection().createStatement();
             String userOperationClaimTable = UserOperationClaim.class.getAnnotation(TableName.class).value();
             String operationClaimTable = OperationClaim.class.getAnnotation(TableName.class).value();
             String operationClaimTableIdColumn = null;
 
-            for (Field field : OperationClaim.class.getDeclaredFields()){
-                if (field.getAnnotation(Id.class) != null){
+            for (Field field : OperationClaim.class.getDeclaredFields()) {
+                if (field.getAnnotation(Id.class) != null) {
                     operationClaimTableIdColumn = field.getName();
                 }
             }
@@ -46,36 +47,55 @@ public class JDBCOperationClaimDao extends BaseDaoJDBCRepository<OperationClaim>
             userOperationClaimTableUserIdField.setAccessible(true);
             String userOperationClaimTableUserIdColumn = userOperationClaimTableUserIdField.getAnnotation(TableColumn.class).name();
 
-            ResultSet resultSet = statement.executeQuery(Queries.getUserClaims(userOperationClaimTable,operationClaimTable,operationClaimTableIdColumn,userOperationClaimTableOperationIdColumn,userOperationClaimTableUserIdColumn,user.getId().toString()));
+            ResultSet resultSet = statement.executeQuery(Queries.getUserClaims(userOperationClaimTable, operationClaimTable, operationClaimTableIdColumn, userOperationClaimTableOperationIdColumn, userOperationClaimTableUserIdColumn, user.getId().toString()));
 
-            while(resultSet.next()){
+            while (resultSet.next()) {
                 OperationClaim operationClaim = new OperationClaim();
                 loadResultSetIntoObject(resultSet, operationClaim);
                 operationClaims.add(operationClaim);
             }
         } catch (SQLException | NoSuchFieldException | IllegalAccessException exception) {
-            System.err.println(exception.getMessage() + "/57 JDBCOperationClaimDao");
+            System.err.println(exception.getMessage() + "/58 JDBCOperationClaimDao");
+        } finally {
+            try {
+                if (statement != null)
+                    statement.close();
+            } catch (SQLException exception) {
+                System.err.println(exception.getMessage() + "/64 JDBCOperationClaimDao");
+            }
         }
         return operationClaims;
     }
 
     @Override
     public OperationClaim getClaimByName(String name) {
-        try{
-            Statement statement = super.getDatabaseConnection().getConnection().createStatement();
+        OperationClaim operationClaim = null;
+        Statement statement = null;
+        try {
+            statement = super.getDatabaseConnection().getConnection().createStatement();
             String operationClaimTable = OperationClaim.class.getAnnotation(TableName.class).value();
             Field nameField = OperationClaim.class.getDeclaredField("name");
             String nameFieldColumnName = nameField.getAnnotation(TableColumn.class).name();
 
-            ResultSet resultSet = statement.executeQuery(Queries.getClaimByName(operationClaimTable, nameFieldColumnName, name));
-            while(resultSet.next()){
-                OperationClaim operationClaim = new OperationClaim();
+            String predicate = String.format("%s=\'%s\'", nameFieldColumnName, name);
+
+            ResultSet resultSet = statement.executeQuery(Queries.getObjectBy(operationClaimTable, predicate));
+            while (resultSet.next()) {
+                operationClaim = new OperationClaim();
                 loadResultSetIntoObject(resultSet, operationClaim);
-                return operationClaim;
             }
-        }catch (SQLException | NoSuchFieldException | IllegalAccessException exception) {
-            System.err.println(exception.getMessage() + "66");
+        } catch (SQLException | NoSuchFieldException | IllegalAccessException exception) {
+            System.err.println(exception.getMessage() + "/88 JDBCOperationClaimDao");
+            operationClaim = null;
+        } finally {
+            try {
+                if (statement != null)
+                    statement.close();
+            } catch (SQLException exception) {
+                System.err.println(exception.getMessage() + "/95 JDBCOperationClaimDao");
+                operationClaim = null;
+            }
         }
-        return null;
+        return operationClaim;
     }
 }

@@ -38,9 +38,9 @@ public class OperationClaimResource {
 
     @GET
     @RolesAllowed({"admin", "staff"})
-    @Path("/by_name/{name}")
+    @Path("/filter")
     @Produces(MediaType.APPLICATION_JSON)
-    public DataResult<OperationClaim> getByName(@PathParam("name") String name) {
+    public DataResult<OperationClaim> getByName(@QueryParam("name") String name) {
         return operationClaimService.getByName(name);
     }
 }

@@ -10,7 +10,8 @@ import java.util.List;
 public class StudentRegisterDto {
     private IndividualUserRegisterDto individualUserRegisterDto;
 
-    private BigDecimal departmentId;
+    private String facultyId;
+    private String departmentName;
     private List<OperationClaim> roles;
 
     private String dateOfEntry;

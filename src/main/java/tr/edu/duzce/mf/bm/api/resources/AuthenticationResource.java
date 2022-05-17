@@ -21,9 +21,7 @@ import tr.edu.duzce.mf.bm.core.utilities.results.DataResult;
 import tr.edu.duzce.mf.bm.core.utilities.results.Result;
 import tr.edu.duzce.mf.bm.core.utilities.security.jwt.TokenGenerator;
 import tr.edu.duzce.mf.bm.core.entities.dtos.AuthenticateUserDTO;
-import tr.edu.duzce.mf.bm.dataAccess.concretes.JDBCDao.JDBCIndividualUserDao;
-import tr.edu.duzce.mf.bm.dataAccess.concretes.JDBCDao.JDBCStaffDao;
-import tr.edu.duzce.mf.bm.dataAccess.concretes.JDBCDao.JDBCStudentDao;
+import tr.edu.duzce.mf.bm.dataAccess.concretes.JDBCDao.*;
 import tr.edu.duzce.mf.bm.entities.dtos.StaffRegisterDto;
 import tr.edu.duzce.mf.bm.entities.dtos.StudentRegisterDto;
 
@@ -38,12 +36,19 @@ public class AuthenticationResource {
     private AuthService authService;
 
     public AuthenticationResource() {
+        IndividualUserManager individualUserManager = new IndividualUserManager(new JDBCIndividualUserDao());
+        UserManager userManager = new UserManager(new JDBCUserDao());
+        DepartmentManager departmentManager = new DepartmentManager(new JDBCDepartmentDao());
+        GenderManager genderManager = new GenderManager(new JDBCGenderDao());
+        OperationClaimManager operationClaimManager = new OperationClaimManager(new JDBCOperationClaimDao());
         this.authService = new AuthManager(
-                new UserManager(new JDBCUserDao()),
-                new IndividualUserManager(new JDBCIndividualUserDao()),
-                new StudentManager(new JDBCStudentDao()),
-                new StaffManager(new JDBCStaffDao()),
-                new OperationClaimManager(new JDBCOperationClaimDao()),
+                userManager,
+                individualUserManager,
+                departmentManager,
+                genderManager,
+                operationClaimManager,
+                new StudentManager(new JDBCStudentDao(), individualUserManager, userManager, departmentManager, genderManager),
+                new StaffManager(new JDBCStaffDao(), individualUserManager, userManager, genderManager, operationClaimManager, new UserOperationClaimManager(new JDBCUserOperationClaimDao())),
                 new UserOperationClaimManager(new JDBCUserOperationClaimDao()),
                 new TokenGenerator()
         );
@@ -63,7 +68,7 @@ public class AuthenticationResource {
 
     @POST
     @Path("/register_student")
-    @PermitAll
+    @RolesAllowed({"admin", "staff"})
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Result registerStudent(StudentRegisterDto studentRegisterDto) {
@@ -72,7 +77,7 @@ public class AuthenticationResource {
 
     @POST
     @Path("/register_staff")
-    @PermitAll
+    @RolesAllowed({"admin"})
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Result registerStaff(StaffRegisterDto staffRegisterDto) {

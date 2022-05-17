@@ -1,5 +1,7 @@
 package tr.edu.duzce.mf.bm.entities.concretes;
 
+import com.opencsv.bean.CsvBindByName;
+import com.opencsv.bean.CsvBindByPosition;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,6 +21,7 @@ public class Gender extends BaseEntity {
     @TableColumn(name = "id")
     private BigDecimal id;
     @TableColumn(name = "name")
+    @CsvBindByPosition(position = 0)
     private String name;
 
     @Override

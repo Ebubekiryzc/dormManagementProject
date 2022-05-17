@@ -1,23 +1,29 @@
 package tr.edu.duzce.mf.bm.api.resources;
 
-import jakarta.annotation.security.PermitAll;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import tr.edu.duzce.mf.bm.business.abstracts.StudentService;
 import tr.edu.duzce.mf.bm.business.abstracts.UserService;
-import tr.edu.duzce.mf.bm.business.concretes.StudentManager;
-import tr.edu.duzce.mf.bm.business.concretes.UserManager;
+import tr.edu.duzce.mf.bm.business.concretes.*;
 import tr.edu.duzce.mf.bm.core.dataAccess.concretes.JDBCUserDao;
+import tr.edu.duzce.mf.bm.core.dataAccess.constants.Messages;
 import tr.edu.duzce.mf.bm.core.entities.concrete.User;
 import tr.edu.duzce.mf.bm.core.utilities.reporting.JasperReportHelper;
 import tr.edu.duzce.mf.bm.core.utilities.results.DataResult;
 import tr.edu.duzce.mf.bm.core.utilities.results.ErrorResult;
 import tr.edu.duzce.mf.bm.core.utilities.results.Result;
+import tr.edu.duzce.mf.bm.core.utilities.results.SuccessDataResult;
+import tr.edu.duzce.mf.bm.dataAccess.concretes.JDBCDao.JDBCDepartmentDao;
+import tr.edu.duzce.mf.bm.dataAccess.concretes.JDBCDao.JDBCGenderDao;
+import tr.edu.duzce.mf.bm.dataAccess.concretes.JDBCDao.JDBCIndividualUserDao;
 import tr.edu.duzce.mf.bm.dataAccess.concretes.JDBCDao.JDBCStudentDao;
 import tr.edu.duzce.mf.bm.entities.concretes.Student;
+import tr.edu.duzce.mf.bm.entities.dtos.StudentDeleteDto;
 import tr.edu.duzce.mf.bm.entities.dtos.StudentDetailDto;
+import tr.edu.duzce.mf.bm.entities.dtos.StudentRegisterDto;
 
 import java.io.File;
 import java.util.List;
@@ -30,8 +36,8 @@ public class StudentResource {
     private static final String REPORT_PATH = "C:/Users/EbubekirPC/Desktop/Projects/dormManagementProject/src/main/resources/StudentReport.jrxml";
 
     public StudentResource() {
-        studentService = new StudentManager(new JDBCStudentDao());
         userService = new UserManager(new JDBCUserDao());
+        studentService = new StudentManager(new JDBCStudentDao(), new IndividualUserManager(new JDBCIndividualUserDao()), userService, new DepartmentManager(new JDBCDepartmentDao()), new GenderManager(new JDBCGenderDao()));
     }
 
     @GET
@@ -45,8 +51,8 @@ public class StudentResource {
     }
 
     @GET
-    @RolesAllowed({"admin", "staff"})
     @Path("/filter")
+    @RolesAllowed({"admin", "staff"})
     @Produces(MediaType.APPLICATION_JSON)
     public DataResult<List<StudentDetailDto>> getByFilter(@QueryParam("first_name") String firstName, @QueryParam("last_name") String lastName) {
         DataResult<List<StudentDetailDto>> result = null;
@@ -68,8 +74,7 @@ public class StudentResource {
 
     @GET
     @Path("/export_report")
-    @PermitAll
-    //   @RolesAllowed({"admin", "staff"})
+    @RolesAllowed({"admin", "staff"})
     @Produces(MediaType.APPLICATION_OCTET_STREAM)
     public Response exportReport() {
         try {
@@ -77,9 +82,14 @@ public class StudentResource {
             System.out.println(filePath);
             reportHelper.createReport(REPORT_PATH, filePath);
             File file = new File(filePath);
-            return Response.ok(file, MediaType.APPLICATION_OCTET_STREAM)
-                    .header("Content-Disposition", "attachment; filename=\"" + file.getName() + "\"")
-                    .build();
+
+
+            filePath = String.format("http://127.0.0.1:8081/%s", "student_report.pdf");
+            SuccessDataResult<String> result = new SuccessDataResult<>(filePath, Messages.ReportCreated);
+
+            String headerValue = "attachment; filename=\"" + file.getName() + "\"";
+            return Response.ok(file, MediaType.APPLICATION_JSON).header(HttpHeaders.CONTENT_DISPOSITION, headerValue)
+                    .entity(result).build();
         } catch (Exception exception) {
             var result = new ErrorResult(exception.getMessage() + "/76 StudentResource");
             return Response.status(Response.Status.BAD_REQUEST).entity(exception.getMessage()).build();
@@ -87,8 +97,8 @@ public class StudentResource {
     }
 
     @GET
-    @RolesAllowed({"admin", "staff"})
     @Path("/{id}")
+    @RolesAllowed({"admin", "staff"})
     @Produces(MediaType.APPLICATION_JSON)
     public DataResult<Student> getById(@PathParam("id") int id) {
         return this.studentService.getById(id);
@@ -101,18 +111,21 @@ public class StudentResource {
         return this.studentService.add(student);
     }
 
-    @PUT
+    @POST
+    @Path("/update")
     @RolesAllowed({"admin", "staff"})
     @Consumes(MediaType.APPLICATION_JSON)
-    public Result update(Student student) {
-        return this.studentService.update(student);
+    public Result update(StudentRegisterDto studentRegisterDto) {
+        return this.studentService.update(studentRegisterDto);
     }
 
-    @DELETE
+    @POST
+    @Path("/delete")
     @RolesAllowed({"admin", "staff"})
     @Consumes(MediaType.APPLICATION_JSON)
-    public Result delete(Student student) {
-        User user = userService.getById(student.getIndividualUserId().intValue()).getEntity();
+    @Produces(MediaType.APPLICATION_JSON)
+    public Result delete(StudentDeleteDto studentDeleteDto) {
+        User user = userService.getById(studentDeleteDto.getIndividualUserId().intValue()).getEntity();
         return this.userService.delete(user);
     }
 }

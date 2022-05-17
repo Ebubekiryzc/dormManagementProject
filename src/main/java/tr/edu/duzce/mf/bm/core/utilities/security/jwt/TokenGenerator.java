@@ -57,7 +57,7 @@ public class TokenGenerator {
         return 3600000; // 1 saat
     }
 
-    public Boolean IsValid(String accessToken, Set<String> roleSet) {
+    public Boolean isValid(String accessToken, Set<String> roleSet) {
         Boolean result = false;
         try {
             Claims claims = Jwts.parser()

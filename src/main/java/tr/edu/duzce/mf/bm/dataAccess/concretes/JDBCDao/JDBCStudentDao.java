@@ -27,8 +27,9 @@ public class JDBCStudentDao extends BaseDaoJDBCRepository<Student> implements St
     @Override
     public List<StudentDetailDto> getByFullName(String firstName, String lastName) {
         List<StudentDetailDto> studentList = new ArrayList<>();
+        CallableStatement callableStatement = null;
         try {
-            CallableStatement callableStatement = super.getDatabaseConnection().getConnection().prepareCall("call get_students_by_full_name(?,?,?)");
+            callableStatement = super.getDatabaseConnection().getConnection().prepareCall("call get_students_by_full_name(?,?,?)");
             callableStatement.registerOutParameter(3, oracle.jdbc.OracleTypes.CURSOR);
             callableStatement.setString(1, firstName);
             callableStatement.setString(2, lastName);
@@ -42,8 +43,17 @@ public class JDBCStudentDao extends BaseDaoJDBCRepository<Student> implements St
                 studentList.add(student);
             }
         } catch (SQLException | IllegalAccessException exception) {
-            System.err.println(exception.getMessage() + "/47 JDBCStudentDao");
-            return null;
+            System.err.println(exception.getMessage() + "/46 JDBCStudentDao");
+            studentList = null;
+        } finally {
+            try {
+                if (callableStatement != null)
+                    callableStatement.close();
+
+            } catch (SQLException exception) {
+                System.err.println(exception.getMessage() + "/54 JDBCStudentDao");
+                studentList = null;
+            }
         }
         return studentList;
     }
@@ -61,8 +71,9 @@ public class JDBCStudentDao extends BaseDaoJDBCRepository<Student> implements St
 
     private List<StudentDetailDto> getByFilters(String procedureName, String parameter) {
         List<StudentDetailDto> studentList = new ArrayList<>();
+        CallableStatement callableStatement = null;
         try {
-            CallableStatement callableStatement = super.getDatabaseConnection().getConnection().prepareCall(String.format("call %s(?,?)", procedureName));
+            callableStatement = super.getDatabaseConnection().getConnection().prepareCall(String.format("call %s(?,?)", procedureName));
             callableStatement.registerOutParameter(2, oracle.jdbc.OracleTypes.CURSOR);
             callableStatement.setString(1, parameter);
             callableStatement.execute();
@@ -75,8 +86,17 @@ public class JDBCStudentDao extends BaseDaoJDBCRepository<Student> implements St
                 studentList.add(student);
             }
         } catch (SQLException | IllegalAccessException exception) {
-            System.err.println(exception.getMessage() + "/79 JDBCStudentDao");
-            return null;
+            System.err.println(exception.getMessage() + "/89 JDBCStudentDao");
+            studentList = null;
+        } finally {
+            try {
+                if (callableStatement != null)
+                    callableStatement.close();
+
+            } catch (SQLException exception) {
+                System.err.println(exception.getMessage() + "/97 JDBCStudentDao");
+                studentList = null;
+            }
         }
         return studentList;
     }

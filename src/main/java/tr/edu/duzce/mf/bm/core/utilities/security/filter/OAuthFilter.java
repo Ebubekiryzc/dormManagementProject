@@ -7,15 +7,12 @@ import jakarta.annotation.security.RolesAllowed;
 import jakarta.ws.rs.Priorities;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.container.ContainerRequestFilter;
-import jakarta.ws.rs.container.PreMatching;
 import jakarta.ws.rs.container.ResourceInfo;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MultivaluedMap;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.Provider;
-import oracle.jdbc.proxy.annotation.Pre;
 import tr.edu.duzce.mf.bm.core.dataAccess.constants.Messages;
-import tr.edu.duzce.mf.bm.core.utilities.results.ErrorResult;
 import tr.edu.duzce.mf.bm.core.utilities.security.jwt.TokenGenerator;
 
 import java.io.IOException;
@@ -68,7 +65,7 @@ public class OAuthFilter implements ContainerRequestFilter {
                     TokenGenerator tokenGenerator = new TokenGenerator();
 
 
-                    if (!tokenGenerator.IsValid(accessToken, roleSet)) {
+                    if (!tokenGenerator.isValid(accessToken, roleSet)) {
                         //ErrorResult errorResult = new ErrorResult(Messages.UnAuthorizedOrNotFound);
                         containerRequestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED).entity(Messages.UnAuthorizedOrNotFound).build());
                         return;

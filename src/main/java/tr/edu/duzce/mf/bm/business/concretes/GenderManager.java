@@ -33,6 +33,16 @@ public class GenderManager implements GenderService {
     }
 
     @Override
+    public DataResult<Gender> getByName(String name) {
+        Gender gender = genderDao.getByName(name);
+        var result = BusinessRules.check(isNull(gender));
+        if (!result.isSuccess()) {
+            return (ErrorDataResult<Gender>) result;
+        }
+        return new SuccessDataResult<>(gender, Messages.OperationSuccessful);
+    }
+
+    @Override
     public Result add(Gender gender) {
         boolean isAdded = genderDao.add(gender);
         if (isAdded) return new SuccessResult(Messages.OperationSuccessful);

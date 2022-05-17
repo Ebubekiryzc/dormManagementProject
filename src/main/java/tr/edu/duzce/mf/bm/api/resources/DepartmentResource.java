@@ -6,6 +6,7 @@ import jakarta.ws.rs.core.MediaType;
 import tr.edu.duzce.mf.bm.business.abstracts.DepartmentService;
 import tr.edu.duzce.mf.bm.business.concretes.DepartmentManager;
 import tr.edu.duzce.mf.bm.core.utilities.results.DataResult;
+import tr.edu.duzce.mf.bm.core.utilities.results.ErrorDataResult;
 import tr.edu.duzce.mf.bm.core.utilities.results.Result;
 import tr.edu.duzce.mf.bm.dataAccess.concretes.JDBCDao.JDBCDepartmentDao;
 import tr.edu.duzce.mf.bm.entities.concretes.Department;
@@ -32,6 +33,15 @@ public class DepartmentResource {
     @Produces(MediaType.APPLICATION_JSON)
     public DataResult<Department> getById(@PathParam("id") int id) {
         return this.departmentService.getById(id);
+    }
+
+    @GET
+    @Path("/filter")
+    @Produces(MediaType.APPLICATION_JSON)
+    public DataResult<Department> getByName(@QueryParam("name") String name, @QueryParam("facultyId") String facultyId) {
+        if(name != null && facultyId != null)
+            return this.departmentService.getByFacultyIdAndName(facultyId, name);
+        return new ErrorDataResult<>();
     }
 
     @POST

@@ -1,6 +1,7 @@
 package tr.edu.duzce.mf.bm.business.concretes;
 
 import com.opencsv.bean.ColumnPositionMappingStrategy;
+import com.opencsv.bean.CsvToBeanBuilder;
 import com.opencsv.bean.StatefulBeanToCsv;
 import com.opencsv.bean.StatefulBeanToCsvBuilder;
 import com.opencsv.exceptions.CsvDataTypeMismatchException;
@@ -15,12 +16,11 @@ import tr.edu.duzce.mf.bm.core.utilities.annotations.InheritedId;
 import tr.edu.duzce.mf.bm.core.utilities.results.ErrorResult;
 import tr.edu.duzce.mf.bm.core.utilities.results.Result;
 import tr.edu.duzce.mf.bm.core.utilities.results.SuccessResult;
+import tr.edu.duzce.mf.bm.entities.concretes.Gender;
 import tr.edu.duzce.mf.bm.entities.concretes.IndividualUser;
 import tr.edu.duzce.mf.bm.entities.concretes.Student;
 
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.Writer;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,13 +31,15 @@ public class OracleDatabaseHelper implements DatabaseHelper {
     private IndividualUserService individualUserService;
     private StaffService staffService;
     private StudentService studentService;
+    private GenderService genderService;
     private OperationClaimService operationClaimService;
 
-    public OracleDatabaseHelper(UserService userService, IndividualUserService individualUserService, StaffService staffService, StudentService studentService, OperationClaimService operationClaimService) {
+    public OracleDatabaseHelper(UserService userService, IndividualUserService individualUserService, StaffService staffService, StudentService studentService, GenderService genderService, OperationClaimService operationClaimService) {
         this.userService = userService;
         this.individualUserService = individualUserService;
         this.staffService = staffService;
         this.studentService = studentService;
+        this.genderService = genderService;
         this.operationClaimService = operationClaimService;
     }
 
@@ -103,6 +105,50 @@ public class OracleDatabaseHelper implements DatabaseHelper {
         var result = exportToCSV(filePath, students, Student.class);
         if (!result.isSuccess()) System.err.println("Hata oluştu /88 OracleDatabaseHelper");
         return result;
+    }
+
+    @Override
+    public Result importGendersToDatabase(String filePath) {
+        try {
+            List<Gender> data = new CsvToBeanBuilder(new FileReader(filePath)).withType(Gender.class).build().parse();
+            for (Gender gender : data) {
+                if (genderService.getByName(gender.getName()).isSuccess()) {
+                    continue;
+                }
+                genderService.add(gender);
+            }
+        } catch (FileNotFoundException e) {
+            return new ErrorResult(Messages.OperationFailed);
+        }
+        return new SuccessResult(Messages.OperationSuccessful);
+    }
+
+    @Override
+    public Result exportGendersFromDatabase(String filePath) {
+        List<Gender> genders = genderService.getAll().getEntity();
+        var result = exportToCSV(filePath, genders, Gender.class);
+        if (!result.isSuccess()) System.err.println("Hata oluştu /88 OracleDatabaseHelper");
+        return result;
+    }
+
+    @Override
+    public Result uploadData(InputStream inputStream, String filePath) {
+        try {
+            OutputStream outputStream = new FileOutputStream(new File(filePath));
+            int read = 0;
+            byte[] bytes = new byte[1024];
+
+            while ((read = inputStream.read(bytes)) != -1) {
+                outputStream.write(bytes, 0, read);
+            }
+
+            outputStream.flush();
+            outputStream.close();
+        } catch (Exception exception) {
+            System.out.println("/150 OracleDatabaseHelper " + exception.getMessage());
+            return new ErrorResult(Messages.OperationFailed);
+        }
+        return new SuccessResult(Messages.OperationSuccessful);
     }
 
 

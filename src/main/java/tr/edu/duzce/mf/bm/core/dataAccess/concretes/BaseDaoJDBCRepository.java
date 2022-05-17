@@ -40,8 +40,9 @@ public abstract class BaseDaoJDBCRepository<TEntity> implements BaseDao<TEntity>
     @Override
     public List<TEntity> getAll() {
         List<TEntity> entityList = new ArrayList<>();
+        Statement statement = null;
         try {
-            Statement statement = getDatabaseConnection().getConnection().createStatement();
+            statement = getDatabaseConnection().getConnection().createStatement();
             ResultSet resultSet = statement.executeQuery(Queries.getAll(entityClass.getAnnotation(TableName.class).value(), getIdColumnName()));
             while (resultSet.next()) {
                 TEntity entity = entityClass.getDeclaredConstructor().newInstance();
@@ -50,7 +51,14 @@ public abstract class BaseDaoJDBCRepository<TEntity> implements BaseDao<TEntity>
             }
         } catch (SQLException | InvocationTargetException | InstantiationException | IllegalAccessException |
                  NoSuchMethodException exception) {
-            System.err.println(exception.getMessage() + "/45 BaseDaoJDBCRepository");
+            System.err.println(exception.getMessage() + "/54 BaseDaoJDBCRepository");
+        } finally {
+            try {
+                if (statement != null)
+                    statement.close();
+            } catch (SQLException exception) {
+                System.err.println(exception.getMessage() + "/60 BaseDaoJDBCRepository");
+            }
         }
         return entityList;
 
@@ -58,8 +66,10 @@ public abstract class BaseDaoJDBCRepository<TEntity> implements BaseDao<TEntity>
 
     @Override
     public TEntity getById(String id) {
+        Statement statement = null;
+        TEntity entity = null;
         try {
-            Statement statement = getDatabaseConnection().getConnection().createStatement();
+            statement = getDatabaseConnection().getConnection().createStatement();
             Field idField = getIdField();
 
             String idColumn = "id";
@@ -69,63 +79,104 @@ public abstract class BaseDaoJDBCRepository<TEntity> implements BaseDao<TEntity>
 
             ResultSet resultSet = statement.executeQuery(Queries.get(entityClass.getAnnotation(TableName.class).value(), idColumn, id));
             while (resultSet.next()) {
-                TEntity entity = entityClass.getDeclaredConstructor().newInstance();
+                entity = entityClass.getDeclaredConstructor().newInstance();
                 loadResultSetIntoObject(resultSet, entity);
-                return entity;
             }
         } catch (SQLException | InvocationTargetException | InstantiationException | IllegalAccessException |
                  NoSuchMethodException exception) {
-            System.err.println(exception.getMessage() + "/65 BaseDaoJDBCRepository");
+            System.err.println(exception.getMessage() + "/87 BaseDaoJDBCRepository");
+            entity = null;
+        } finally {
+            try {
+                if (statement != null)
+                    statement.close();
+            } catch (SQLException exception) {
+                System.err.println(exception.getMessage() + "/94 BaseDaoJDBCRepository");
+                entity = null;
+            }
         }
-        return null;
+        return entity;
     }
 
     @Override
     public boolean add(TEntity tEntity) {
+        Statement statement = null;
+        boolean result;
         try {
-            Statement statement = getDatabaseConnection().getConnection().createStatement();
+            statement = getDatabaseConnection().getConnection().createStatement();
             String tableName = entityClass.getAnnotation(TableName.class).value();
 
             statement.executeUpdate(Queries.add(tableName, getNonPKFieldNames(tEntity), getNonPKFieldValues(tEntity)));
+            result = true;
         } catch (Exception exception) {
-            System.err.println(exception.getMessage() + "/80 BaseDaoJDBCRepository");
-            return false;
+            System.err.println(exception.getMessage() + "/112 BaseDaoJDBCRepository");
+            result = false;
+        } finally {
+            try {
+                if (statement != null)
+                    statement.close();
+            } catch (SQLException exception) {
+                System.err.println(exception.getMessage() + "/119 BaseDaoJDBCRepository");
+                result = false;
+            }
         }
-        return true;
+        return result;
     }
 
     @Override
     public boolean update(TEntity tEntity) {
+        Statement statement = null;
+        boolean result;
         try {
-            Statement statement = getDatabaseConnection().getConnection().createStatement();
+            statement = getDatabaseConnection().getConnection().createStatement();
             String tableName = entityClass.getAnnotation(TableName.class).value();
 
             ResultSet resultSet = statement.executeQuery(Queries.update(tableName, tEntity.toString(), getIdColumnName(), getFieldStringValue(getIdField(), tEntity)));
+            result = true;
             if (!resultSet.next()) {
                 throw new NotExistInDatabase();
             }
         } catch (SQLException | NoSuchElementException | IllegalAccessException | NotExistInDatabase exception) {
-            System.err.println(exception.getMessage() + "/99 BaseDaoJDBCRepository");
-            return false;
+            System.err.println(exception.getMessage() + "/140 BaseDaoJDBCRepository");
+            result = false;
+        } finally {
+            try {
+                if (statement != null)
+                    statement.close();
+            } catch (SQLException exception) {
+                System.err.println(exception.getMessage() + "/147 BaseDaoJDBCRepository");
+                result = false;
+            }
         }
-        return true;
+        return result;
     }
 
     @Override
     public boolean delete(TEntity tEntity) {
+        Statement statement = null;
+        boolean result;
         try {
-            Statement statement = getDatabaseConnection().getConnection().createStatement();
+            statement = getDatabaseConnection().getConnection().createStatement();
             String tableName = entityClass.getAnnotation(TableName.class).value();
 
             ResultSet resultSet = statement.executeQuery(Queries.delete(tableName, getIdColumnName(), getFieldStringValue(getIdField(), tEntity)));
+            result = true;
             if (!resultSet.next()) {
                 throw new NotExistInDatabase();
             }
         } catch (SQLException | NoSuchElementException | IllegalAccessException | NotExistInDatabase exception) {
-            System.err.println(exception.getMessage() + "/118 BaseDaoJDBCRepository");
-            return false;
+            System.err.println(exception.getMessage() + "/167 BaseDaoJDBCRepository");
+            result = false;
+        } finally {
+            try {
+                if (statement != null)
+                    statement.close();
+            } catch (SQLException exception) {
+                System.err.println(exception.getMessage() + "/174 BaseDaoJDBCRepository");
+                result = false;
+            }
         }
-        return true;
+        return result;
     }
 
     private String getIdColumnName() {

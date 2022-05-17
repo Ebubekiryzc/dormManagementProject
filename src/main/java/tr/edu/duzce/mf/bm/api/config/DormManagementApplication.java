@@ -1,6 +1,7 @@
 package tr.edu.duzce.mf.bm.api.config;
 
 import jakarta.ws.rs.ApplicationPath;
+import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 import tr.edu.duzce.mf.bm.core.utilities.security.filter.CORSFilter;
 import tr.edu.duzce.mf.bm.core.utilities.security.filter.OAuthFilter;
@@ -12,6 +13,7 @@ public class DormManagementApplication extends ResourceConfig {
         packages("tr.edu.duzce.mf.bm");
         register(OAuthFilter.class);
         register(CORSFilter.class);
+        register(MultiPartFeature.class);
         //property("jersey.config.beanValidation.enableOutputValidationErrorEntity.server", "true");
     }
 }

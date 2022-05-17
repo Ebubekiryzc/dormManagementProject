@@ -13,6 +13,7 @@ import tr.edu.duzce.mf.bm.core.utilities.results.Result;
 import tr.edu.duzce.mf.bm.dataAccess.concretes.JDBCDao.JDBCGenderDao;
 import tr.edu.duzce.mf.bm.entities.concretes.Gender;
 
+import javax.print.attribute.standard.Media;
 import java.util.List;
 
 
@@ -45,7 +46,15 @@ public class GenderResource {
         return this.genderService.getById(id);
     }
 
-    // TODO: id ile ilgili değişiklikler yapılacak.
+    @GET
+    @Path("/filter")
+    @RolesAllowed({"admin", "staff"})
+    @Produces(MediaType.APPLICATION_JSON)
+    public DataResult<Gender> filter(@QueryParam("name") String name) {
+        return this.genderService.getByName(name);
+    }
+
+
     @POST
     @PermitAll
     @Consumes(MediaType.APPLICATION_JSON)

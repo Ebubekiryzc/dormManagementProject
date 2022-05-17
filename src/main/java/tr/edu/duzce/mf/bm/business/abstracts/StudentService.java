@@ -4,6 +4,7 @@ import tr.edu.duzce.mf.bm.core.utilities.results.DataResult;
 import tr.edu.duzce.mf.bm.core.utilities.results.Result;
 import tr.edu.duzce.mf.bm.entities.concretes.Student;
 import tr.edu.duzce.mf.bm.entities.dtos.StudentDetailDto;
+import tr.edu.duzce.mf.bm.entities.dtos.StudentRegisterDto;
 
 import java.util.List;
 
@@ -16,7 +17,7 @@ public interface StudentService {
 
     public Result add(Student student);
 
-    public Result update(Student student);
+    public Result update(StudentRegisterDto studentRegisterDto);
 
     public Result delete(Student student);
 

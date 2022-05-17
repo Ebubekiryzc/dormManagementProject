@@ -14,4 +14,5 @@ public class Messages {
     public static String PasswordNotMatch = "Parolanız uyuşmuyor.";
     public static String ReportCreated = "Rapor oluşturuldu.";
     public static String BackupFailed = "Yedek alınamadı!";
+    public static String RangeInvalid = "Aralık hatalı!";
 }

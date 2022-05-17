@@ -22,19 +22,29 @@ public class JDBCUserDao extends BaseDaoJDBCRepository<User> implements UserDao 
         super(User.class);
     }
 
-    public User getByUsername(String username){
+    public User getByUsername(String username) {
+        Statement statement = null;
+        User user = null;
         try {
-            Statement statement = DatabaseConnection.getInstance().getConnection().createStatement();
+            statement = DatabaseConnection.getInstance().getConnection().createStatement();
             var tableName = User.class.getAnnotation(TableName.class).value();
-            ResultSet resultSet = statement.executeQuery(Queries.getByUsername(tableName,username));
-            while (resultSet.next()){
-                User user = new User();
+            ResultSet resultSet = statement.executeQuery(Queries.getByUsername(tableName, username));
+            while (resultSet.next()) {
+                user = new User();
                 super.loadResultSetIntoObject(resultSet, user);
-                return user;
             }
         } catch (SQLException | IllegalAccessException exception) {
-            System.err.println(exception.getMessage() + "/36 JDBCUserDao");
+            System.err.println(exception.getMessage() + "/37 JDBCUserDao");
+            user = null;
+        } finally {
+            try {
+                if (statement != null)
+                    statement.close();
+            } catch (SQLException exception) {
+                System.err.println(exception.getMessage() + "/45 JDBCUserDao");
+                user = null;
+            }
         }
-        return null;
+        return user;
     }
 }

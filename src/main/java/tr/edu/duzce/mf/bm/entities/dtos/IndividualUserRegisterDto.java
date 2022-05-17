@@ -8,7 +8,7 @@ import java.math.BigDecimal;
 @Data
 public class IndividualUserRegisterDto {
     private AuthenticateUserDTO authenticateUserDTO;
-    private BigDecimal genderId;
+    private String genderName;
 
     private String firstName;
     private String lastName;

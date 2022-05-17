@@ -9,6 +9,8 @@ import java.math.BigDecimal;
 public class StudentDetailDto {
     @TableColumn(name="individual_user_id")
     private BigDecimal id;
+    @TableColumn(name="username")
+    private String username;
     @TableColumn(name="first_name")
     private String firstName;
     @TableColumn(name="last_name")
